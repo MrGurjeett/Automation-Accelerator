@@ -1,0 +1,65 @@
+# Main Configuration File
+
+# Environment Configuration
+environment: "qa"
+
+environments:
+  dev:
+    base_url: "https://dev.example.com"
+    api_url: "https://api.dev.example.com"
+  qa:
+    base_url: "https://qa.example.com"
+    api_url: "https://api.qa.example.com"
+  staging:
+    base_url: "https://staging.example.com"
+    api_url: "https://api.staging.example.com"
+  prod:
+    base_url: "https://www.example.com"
+    api_url: "https://api.example.com"
+
+# Browser Configuration
+browser:
+  headless: false
+  browser_type: "chromium"  # chromium, firefox, webkit
+  slow_mo: 0
+  timeout: 30000
+  viewport:
+    width: 1920
+    height: 1080
+  video: false
+  screenshot_on_failure: true
+
+# Test Configuration
+test:
+  parallel_workers: 4
+  retry_count: 1
+  timeout: 300
+
+# Database Configuration
+database:
+  host: "localhost"
+  port: 5432
+  name: "test_db"
+  user: "test_user"
+  password: "test_password"
+
+# Email Configuration
+email:
+  smtp_server: "smtp.gmail.com"
+  smtp_port: 587
+  sender_email: "test@example.com"
+  sender_password: "password"
+
+# Reporting Configuration
+reporting:
+  allure_results_dir: "allure-results"
+  html_report_dir: "reports"
+  screenshot_dir: "screenshots"
+
+# API Configuration
+api:
+  timeout: 30
+  retry_attempts: 3
+  headers:
+    Content-Type: "application/json"
+    Accept: "application/json"

@@ -1,0 +1,27 @@
+# Sample Test Data
+users:
+  valid_user:
+    username: "testuser@example.com"
+    password: "Test@123"
+    first_name: "Test"
+    last_name: "User"
+  
+  invalid_user:
+    username: "invalid@example.com"
+    password: "wrong_password"
+
+search_terms:
+  - "automation"
+  - "playwright"
+  - "testing"
+
+products:
+  product_1:
+    name: "Sample Product"
+    price: 99.99
+    quantity: 2
+  
+  product_2:
+    name: "Another Product"
+    price: 149.99
+    quantity: 1
