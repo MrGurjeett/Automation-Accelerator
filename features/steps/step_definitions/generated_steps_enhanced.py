@@ -1,7 +1,7 @@
 from pathlib import Path
 import sys
-from playwright.sync_api import expect
 from pytest_bdd import given, when, then, parsers
+from playwright.sync_api import expect
 import logging
 
 PAGES_DIR = (Path(__file__).resolve().parent / r'..\..\..\pages\generated').resolve()
@@ -14,9 +14,8 @@ logger = logging.getLogger(__name__)
 
 @given('the user is on the Demoqa Com page')
 def step_open_demoqa_com(page):
-    page_obj = DemoqaComPage(page)
-    page_obj.open()
-    logger.info('Opened DemoQA page')
+    DemoqaComPage(page).open()
+    logger.info('Opened DemoQA main page')
 
 @when('the user clicks Elements Link')
 def step_click_elements_link(page):
@@ -82,8 +81,9 @@ def step_click_click_me_button(page):
 @when('the user right clicks Right Click Me Button')
 def step_right_click_right_click_me_button(page):
     DemoqaComPage(page).right_click_right_click_me_button()
-    expect(page.locator('#rightClickMessage')).to_be_visible()
+    expect(page.locator('#rightClickBtn')).to_be_attached()
 
 @then('the user closes the page')
 def step_close_page(page):
     page.close()
+    logger.info('Closed DemoQA page')

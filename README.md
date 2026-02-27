@@ -193,6 +193,27 @@ In [config/config.yaml](config/config.yaml), set:
 
 Use `"in_memory"` for non-persistent local testing.
 
+### Python 3.14 workaround (recommended in restricted environments)
+
+If ChromaDB is blocked/incompatible on Python 3.14, use:
+
+- `ai.rag.vector_store: "in_memory_persist"`
+- `ai.rag.in_memory_persist_path: ".vector_store/store.json"`
+
+This keeps retrieval persistent across runs without changing Python version.
+
+### Vector DB backend recommendation
+
+- Python 3.14 + local persistent + higher scale: use `qdrant`
+- Python 3.14 + simplest setup: use `in_memory_persist`
+- `chroma` can remain optional, but may fail on Python 3.14 depending on dependency stack.
+
+For Qdrant local mode in [config/config.yaml](config/config.yaml):
+
+- `ai.rag.vector_store: "qdrant"`
+- `ai.rag.qdrant_persist_path: ".qdrant"`
+- `ai.rag.qdrant_collection_name: "automation_kb"`
+
 ### Quick usage
 
 ```python

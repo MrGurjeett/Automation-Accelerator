@@ -14,6 +14,8 @@ from ai.rag.embedder import EmbeddingService
 from ai.rag.retriever import Retriever
 from ai.rag.text_chunker import TextChunker
 from ai.rag.vectordb import ChromaVectorStore, InMemoryVectorStore, VectorDocument
+from ai.rag.vectordb import PersistentInMemoryVectorStore
+from ai.rag.vectordb import QdrantVectorStore
 from recorder.launch_codegen import LaunchCodegen
 from recorder.postprocess_codegen import PostProcessCodegen
 
@@ -55,6 +57,13 @@ def stage2_baseline(codegen: str, scenario: str, feature_file: str, steps_file: 
 
 
 def _build_vector_store(config: AIConfig):
+    if config.rag.vector_store == "in_memory_persist":
+        return PersistentInMemoryVectorStore(config.rag.in_memory_persist_path)
+    if config.rag.vector_store == "qdrant":
+        return QdrantVectorStore(
+            persist_path=config.rag.qdrant_persist_path,
+            collection_name=config.rag.qdrant_collection_name,
+        )
     if config.rag.vector_store == "chroma":
         try:
             return ChromaVectorStore(

@@ -1,5 +1,5 @@
 Feature: DemoQA User Interaction Flow
-  Scenario: User completes a series of actions on DemoQA
+  Scenario: Complete DemoQA Elements and Buttons Flow
     Given the user is on the Demoqa Com page
     When the user clicks Elements Link
     And the user clicks Check Box Link

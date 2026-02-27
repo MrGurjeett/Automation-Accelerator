@@ -90,3 +90,9 @@ recorded_test.py
 
 # ChromaDB persistence
 .chroma/
+
+# Python 3.14-safe vector store persistence
+.vector_store/
+
+# Qdrant local persistence
+.qdrant/

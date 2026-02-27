@@ -6,6 +6,7 @@ from typing import Protocol
 import json
 import math
 import threading
+import uuid
 
 
 @dataclass
@@ -93,6 +94,27 @@ class InMemoryVectorStore:
 		self.upsert(docs)
 
 
+class PersistentInMemoryVectorStore(InMemoryVectorStore):
+	"""In-memory vector store with JSON persistence (Python 3.14 safe)."""
+
+	def __init__(self, persist_path: str = ".vector_store/store.json") -> None:
+		super().__init__()
+		self.persist_path = Path(persist_path)
+		self.persist_path.parent.mkdir(parents=True, exist_ok=True)
+		if self.persist_path.exists():
+			self.load_json(self.persist_path)
+
+	def upsert(self, docs: list[VectorDocument]) -> int:
+		count = super().upsert(docs)
+		self.to_json(self.persist_path)
+		return count
+
+	def delete(self, ids: list[str]) -> int:
+		count = super().delete(ids)
+		self.to_json(self.persist_path)
+		return count
+
+
 class ChromaVectorStore:
 	"""Persistent ChromaDB-backed vector store."""
 
@@ -160,6 +182,123 @@ class ChromaVectorStore:
 			)
 
 		return pairs
+
+
+class QdrantVectorStore:
+	"""Persistent Qdrant local vector store (Python 3.14 compatible)."""
+
+	def __init__(self, persist_path: str = ".qdrant", collection_name: str = "automation_kb") -> None:
+		from qdrant_client import QdrantClient
+
+		self.client = QdrantClient(path=persist_path)
+		self.collection_name = collection_name
+		self._collection_ready = False
+
+	def _ensure_collection(self, vector_size: int) -> None:
+		if self._collection_ready:
+			return
+
+		from qdrant_client.http import models
+
+		existing = {c.name for c in self.client.get_collections().collections}
+		if self.collection_name not in existing:
+			self.client.create_collection(
+				collection_name=self.collection_name,
+				vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE),
+			)
+		self._collection_ready = True
+
+	def upsert(self, docs: list[VectorDocument]) -> int:
+		if not docs:
+			return 0
+
+		vector_size = len(docs[0].embedding)
+		self._ensure_collection(vector_size)
+
+		from qdrant_client.http import models
+
+		points = []
+		for d in docs:
+			points.append(
+				models.PointStruct(
+					id=self._to_qdrant_id(d.id),
+					vector=d.embedding,
+					payload={
+						"original_id": d.id,
+						"text": d.text,
+						"metadata": d.metadata,
+					},
+				)
+			)
+
+		self.client.upsert(collection_name=self.collection_name, points=points)
+		return len(points)
+
+	def delete(self, ids: list[str]) -> int:
+		if not ids:
+			return 0
+
+		from qdrant_client.http import models
+
+		self.client.delete(
+			collection_name=self.collection_name,
+			points_selector=models.PointIdsList(points=[self._to_qdrant_id(i) for i in ids]),
+		)
+		return len(ids)
+
+	def similarity_search(self, query_vector: list[float], top_k: int = 5) -> list[tuple[VectorDocument, float]]:
+		if not query_vector:
+			return []
+
+		if not self._collection_ready:
+			existing = {c.name for c in self.client.get_collections().collections}
+			if self.collection_name not in existing:
+				return []
+			self._collection_ready = True
+
+		response = self.client.query_points(
+			collection_name=self.collection_name,
+			query=query_vector,
+			limit=max(1, top_k),
+			with_payload=True,
+			with_vectors=False,
+		)
+		result = response.points if hasattr(response, "points") else response
+
+		pairs: list[tuple[VectorDocument, float]] = []
+		for item in result:
+			payload = item.payload or {}
+			metadata = payload.get("metadata") if isinstance(payload.get("metadata"), dict) else {}
+			text = str(payload.get("text", ""))
+			original_id = str(payload.get("original_id") or item.id)
+			pairs.append(
+				(
+					VectorDocument(
+						id=original_id,
+						text=text,
+						metadata={k: str(v) for k, v in metadata.items()},
+						embedding=[],
+					),
+					float(item.score),
+				)
+			)
+		return pairs
+
+	def close(self) -> None:
+		try:
+			self.client.close()
+		except Exception:
+			pass
+
+	def __del__(self) -> None:
+		self.close()
+
+	@staticmethod
+	def _to_qdrant_id(value: str) -> str:
+		try:
+			return str(uuid.UUID(str(value)))
+		except Exception:
+			return str(uuid.uuid5(uuid.NAMESPACE_URL, str(value)))
 
 
 def _cosine_similarity(a: list[float], b: list[float]) -> float:

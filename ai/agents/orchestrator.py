@@ -14,7 +14,13 @@ from ai.rag.document_loader import DocumentLoader
 from ai.rag.embedder import EmbeddingService
 from ai.rag.retriever import Retriever
 from ai.rag.text_chunker import TextChunker
-from ai.rag.vectordb import ChromaVectorStore, InMemoryVectorStore, VectorDocument
+from ai.rag.vectordb import (
+	ChromaVectorStore,
+	InMemoryVectorStore,
+	PersistentInMemoryVectorStore,
+	QdrantVectorStore,
+	VectorDocument,
+)
 
 
 class AgentOrchestrator:
@@ -53,6 +59,13 @@ class AgentOrchestrator:
 
 	def _build_vector_store(self):
 		backend = self.config.rag.vector_store
+		if backend == "in_memory_persist":
+			return PersistentInMemoryVectorStore(self.config.rag.in_memory_persist_path)
+		if backend == "qdrant":
+			return QdrantVectorStore(
+				persist_path=self.config.rag.qdrant_persist_path,
+				collection_name=self.config.rag.qdrant_collection_name,
+			)
 		if backend == "chroma":
 			try:
 				return ChromaVectorStore(
