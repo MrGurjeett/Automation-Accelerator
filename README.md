@@ -158,6 +158,85 @@ Override configuration with environment variables:
 - `BASE_URL`: Override base URL
 - `HEADLESS`: Run in headless mode (true/false)
 
+## Agentic AI + RAG
+
+The framework now includes a production-ready agentic AI module under [ai](ai).
+
+### Required Azure OpenAI environment variables
+
+- `AZURE_OPENAI_ENDPOINT`
+- `AZURE_OPENAI_API_KEY`
+- `AZURE_OPENAI_EMBEDDING_ENDPOINT` (optional, defaults to `AZURE_OPENAI_ENDPOINT`)
+- `AZURE_OPENAI_EMBEDDING_API_KEY` (optional, defaults to `AZURE_OPENAI_API_KEY`)
+- `AZURE_OPENAI_CHAT_DEPLOYMENT`
+- `AZURE_OPENAI_EMBEDDING_DEPLOYMENT`
+- `AZURE_OPENAI_API_VERSION` (optional, default: `2024-10-21`)
+
+### Main classes
+
+- [AgentOrchestrator](ai/agents/orchestrator.py)
+- [IntentAgent](ai/agents/intent_agent.py)
+- [EmbeddingService](ai/rag/embedder.py)
+- [ChromaVectorStore](ai/rag/vectordb.py)
+- [InMemoryVectorStore](ai/rag/vectordb.py)
+- [Retriever](ai/rag/retriever.py)
+- [FeatureGenerator](ai/generator/feature_generator.py)
+- [StepGenerator](ai/generator/step_generator.py)
+
+### ChromaDB setup
+
+In [config/config.yaml](config/config.yaml), set:
+
+- `ai.rag.vector_store: "chroma"`
+- `ai.rag.chroma_persist_directory: ".chroma"`
+- `ai.rag.chroma_collection_name: "automation_kb"`
+
+Use `"in_memory"` for non-persistent local testing.
+
+### Quick usage
+
+```python
+from ai.agents.orchestrator import AgentOrchestrator
+
+orchestrator = AgentOrchestrator(config_path="config/config.yaml")
+result = orchestrator.run("Generate login feature and step definitions")
+print(result)
+```
+
+### Staged CLI workflow
+
+Use [ai/pipeline_cli.py](ai/pipeline_cli.py) for stage-wise execution.
+
+1) Stage 1: Capture user actions via Playwright codegen
+
+```bash
+python ai/pipeline_cli.py stage1-codegen --url https://demoqa.com/ --output codegen_output.py
+```
+
+2) Stage 2: Generate baseline files from codegen
+
+```bash
+python ai/pipeline_cli.py stage2-baseline --codegen codegen_output.py --scenario "Checkout flow"
+```
+
+3) Stage 3: Index baseline + knowledge base into vector store (Chroma)
+
+```bash
+python ai/pipeline_cli.py stage3-index --config config/config.yaml
+```
+
+4) Stage 4: Generate enhanced files (baseline retained for comparison)
+
+```bash
+python ai/pipeline_cli.py stage4-enhance --config config/config.yaml --query "Create readable checkout automation"
+```
+
+5) Run all stages in one go
+
+```bash
+python ai/pipeline_cli.py stage-all --url https://demoqa.com/ --scenario "Checkout flow" --query "Create readable checkout automation"
+```
+
 ## Best Practices
 
 1. Use Page Object Model for UI elements

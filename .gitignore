@@ -87,3 +87,6 @@ package-lock.json
 # Output files
 output/
 recorded_test.py
+
+# ChromaDB persistence
+.chroma/

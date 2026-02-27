@@ -21,32 +21,16 @@ class LaunchCodegen:
 
         self.language = language
 
-        self.playwright_bin = self._resolve_playwright_binary()
-
-    def _resolve_playwright_binary(self) -> str:
-
-        """
-
-        Resolve Playwright executable from virtualenv or fallback to global.
-
-        """
-
-        venv_bin = os.path.join(".venv", "Scripts", "playwright.exe")
-
-        if os.path.exists(venv_bin):
-
-            return venv_bin
-
-        # Fallback to global playwright
-
-        return "playwright"
+        self.python_bin = sys.executable
 
     def launch(self, url: str, output_file: str | None = None):
         """
         Launch Playwright Codegen with a large viewport.
         """
         cmd = [
-            self.playwright_bin,
+            self.python_bin,
+            "-m",
+            "playwright",
             "codegen",
             url,
             "--target",
@@ -60,7 +44,8 @@ class LaunchCodegen:
         print(f"Launching Codegen: {' '.join(cmd)}")
 
         # Run codegen — don't check return code (browser close = normal)
-        subprocess.run(cmd, check=False)
+        result = subprocess.run(cmd, check=False)
+        return result.returncode
 
 
 def main():
@@ -103,9 +88,11 @@ def main():
 
     launcher = LaunchCodegen(language=args.language)
 
-    launcher.launch(url=args.url, output_file=args.output)
+    return_code = launcher.launch(url=args.url, output_file=args.output)
 
     # Always exit 0 — user closing the browser is normal behavior
+    if return_code not in (0,):
+        sys.exit(return_code)
     sys.exit(0)
 
 

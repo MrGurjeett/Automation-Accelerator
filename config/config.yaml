@@ -63,3 +63,27 @@ api:
   headers:
     Content-Type: "application/json"
     Accept: "application/json"
+
+# Agentic AI / RAG Configuration
+ai:
+  azure_openai:
+    endpoint: "${AZURE_OPENAI_ENDPOINT}"
+    api_key: "${AZURE_OPENAI_API_KEY}"
+    embedding_endpoint: "${AZURE_OPENAI_EMBEDDING_ENDPOINT}"
+    embedding_api_key: "${AZURE_OPENAI_EMBEDDING_API_KEY}"
+    api_version: "2024-10-21"
+    chat_deployment: "${AZURE_OPENAI_CHAT_DEPLOYMENT}"
+    embedding_deployment: "${AZURE_OPENAI_EMBEDDING_DEPLOYMENT}"
+
+  rag:
+    top_k: 5
+    min_score: 0.2
+    chunk_size: 900
+    chunk_overlap: 150
+    max_context_chars: 12000
+    semantic_weight: 0.8
+    keyword_weight: 0.2
+    knowledge_base_dir: "ai/knowledge_base"
+    vector_store: "chroma"           # "in_memory" | "chroma"
+    chroma_persist_directory: ".chroma"
+    chroma_collection_name: "automation_kb"

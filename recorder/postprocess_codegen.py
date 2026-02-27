@@ -884,25 +884,36 @@ if __name__ == "__main__":
     )
     parser.add_argument("--codegen", required=True, help="Path to codegen output")
     parser.add_argument("--scenario", required=True, help="Scenario name")
+    parser.add_argument("--feature-file", help="Output feature file path")
+    parser.add_argument("--steps-file", help="Output step definitions file path")
+    parser.add_argument("--pages-dir", help="Output pages directory")
+    parser.add_argument("--non-interactive", action="store_true", help="Run without Tkinter dialogs")
     args = parser.parse_args()
 
     processor = PostProcessCodegen()
 
-    feature_file = processor.ask_feature_file(
-        "Feature File", ".feature", [("Feature Files", "*.feature")]
-    )
-    if not feature_file:
-        print("Operation aborted by user.")
-        raise SystemExit(0)
-    steps_file = processor.ask_file(
-        "Steps File", ".py", [("Python Files", "*.py")]
-    )
+    if args.non_interactive:
+        if not args.feature_file or not args.steps_file or not args.pages_dir:
+            raise SystemExit("--non-interactive requires --feature-file, --steps-file, and --pages-dir")
+        feature_file = args.feature_file
+        steps_file = args.steps_file
+        pages_dir = args.pages_dir
+    else:
+        feature_file = args.feature_file or processor.ask_feature_file(
+            "Feature File", ".feature", [("Feature Files", "*.feature")]
+        )
+        if not feature_file:
+            print("Operation aborted by user.")
+            raise SystemExit(0)
+        steps_file = args.steps_file or processor.ask_file(
+            "Steps File", ".py", [("Python Files", "*.py")]
+        )
+        pages_dir = args.pages_dir or processor.ask_dir("Select Pages Folder")
 
     steps = processor.extract_steps_from_codegen(args.codegen)
     _, annotated_steps = processor.prepare_page_definitions(steps)
     processor.generate_feature_file(annotated_steps, feature_file, args.scenario)
 
-    pages_dir = processor.ask_dir("Select Pages Folder")
     processor.generate_page_class_files(annotated_steps, pages_dir)
     processor.generate_step_definitions_file(annotated_steps, steps_file, pages_dir)
 

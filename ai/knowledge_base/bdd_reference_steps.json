@@ -1,0 +1,20 @@
+[
+	{
+		"id": "login-001",
+		"feature": "login",
+		"step": "Given I am on the login page",
+		"python": "@given('I am on the login page')\ndef step_impl(page, base_url):\n    page.goto(f'{base_url}/login')"
+	},
+	{
+		"id": "login-002",
+		"feature": "login",
+		"step": "When I enter valid username and password",
+		"python": "@when('I enter valid username and password')\ndef step_impl(page):\n    page.locator('input[name=\"username\"]').fill('valid@test.com')\n    page.locator('input[name=\"password\"]').fill('Test@123')"
+	},
+	{
+		"id": "login-003",
+		"feature": "login",
+		"step": "Then I should see a welcome message",
+		"python": "@then('I should see a welcome message')\ndef step_impl(page):\n    expect(page.locator('h1.welcome')).to_be_visible()"
+	}
+]
