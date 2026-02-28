@@ -74,8 +74,6 @@ class RAGSettings:
     knowledge_base_dir: str = "ai/knowledge_base"
     vector_store: str = "in_memory"
     in_memory_persist_path: str = ".vector_store/store.json"
-    chroma_persist_directory: str = ".chroma"
-    chroma_collection_name: str = "automation_kb"
     qdrant_persist_path: str = ".qdrant"
     qdrant_collection_name: str = "automation_kb"
 
@@ -94,8 +92,6 @@ class RAGSettings:
             knowledge_base_dir=str(rag_cfg.get("knowledge_base_dir", "ai/knowledge_base")).strip(),
             vector_store=str(rag_cfg.get("vector_store", "in_memory")).strip().lower(),
             in_memory_persist_path=str(rag_cfg.get("in_memory_persist_path", ".vector_store/store.json")).strip(),
-            chroma_persist_directory=str(rag_cfg.get("chroma_persist_directory", ".chroma")).strip(),
-            chroma_collection_name=str(rag_cfg.get("chroma_collection_name", "automation_kb")).strip(),
             qdrant_persist_path=str(rag_cfg.get("qdrant_persist_path", ".qdrant")).strip(),
             qdrant_collection_name=str(rag_cfg.get("qdrant_collection_name", "automation_kb")).strip(),
         )

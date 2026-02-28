@@ -177,25 +177,25 @@ The framework now includes a production-ready agentic AI module under [ai](ai).
 - [AgentOrchestrator](ai/agents/orchestrator.py)
 - [IntentAgent](ai/agents/intent_agent.py)
 - [EmbeddingService](ai/rag/embedder.py)
-- [ChromaVectorStore](ai/rag/vectordb.py)
+- [QdrantVectorStore](ai/rag/vectordb.py)
 - [InMemoryVectorStore](ai/rag/vectordb.py)
 - [Retriever](ai/rag/retriever.py)
 - [FeatureGenerator](ai/generator/feature_generator.py)
 - [StepGenerator](ai/generator/step_generator.py)
 
-### ChromaDB setup
+### Qdrant DB setup
 
 In [config/config.yaml](config/config.yaml), set:
 
-- `ai.rag.vector_store: "chroma"`
-- `ai.rag.chroma_persist_directory: ".chroma"`
-- `ai.rag.chroma_collection_name: "automation_kb"`
+- `ai.rag.vector_store: "qdrant"`
+- `ai.rag.qdrant_persist_path: ".qdrant"`
+- `ai.rag.qdrant_collection_name: "automation_kb"`
 
 Use `"in_memory"` for non-persistent local testing.
 
-### Python 3.14 workaround (recommended in restricted environments)
+### Python compatibility (recommended in restricted environments)
 
-If ChromaDB is blocked/incompatible on Python 3.14, use:
+If you have issues with C++ compiler bindings, you can fallback to the standard in-memory storage:
 
 - `ai.rag.vector_store: "in_memory_persist"`
 - `ai.rag.in_memory_persist_path: ".vector_store/store.json"`

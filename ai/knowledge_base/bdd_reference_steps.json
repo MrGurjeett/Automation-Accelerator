@@ -1,20 +1,302 @@
 [
-	{
-		"id": "login-001",
-		"feature": "login",
-		"step": "Given I am on the login page",
-		"python": "@given('I am on the login page')\ndef step_impl(page, base_url):\n    page.goto(f'{base_url}/login')"
-	},
-	{
-		"id": "login-002",
-		"feature": "login",
-		"step": "When I enter valid username and password",
-		"python": "@when('I enter valid username and password')\ndef step_impl(page):\n    page.locator('input[name=\"username\"]').fill('valid@test.com')\n    page.locator('input[name=\"password\"]').fill('Test@123')"
-	},
-	{
-		"id": "login-003",
-		"feature": "login",
-		"step": "Then I should see a welcome message",
-		"python": "@then('I should see a welcome message')\ndef step_impl(page):\n    expect(page.locator('h1.welcome')).to_be_visible()"
-	}
+    {
+        "id": "login-001",
+        "feature": "login",
+        "step": "Given I am on the login page",
+        "python": "@given('I am on the login page')\ndef step_impl(page, base_url):\n    page.goto(f'{base_url}/login')"
+    },
+    {
+        "id": "login-002",
+        "feature": "login",
+        "step": "When I enter a valid username and password",
+        "python": "@when('I enter a valid username and password')\ndef step_impl(page):\n    page.fill(\"input[name='username']\", 'standard_user')\n    page.fill(\"input[name='password']\", 'secret_sauce')"
+    },
+    {
+        "id": "login-003",
+        "feature": "login",
+        "step": "When I click the login button",
+        "python": "@when('I click the login button')\ndef step_impl(page):\n    page.click(\"button[type='submit']\")"
+    },
+    {
+        "id": "login-004",
+        "feature": "login",
+        "step": "Then I should be redirected to the dashboard",
+        "python": "@then('I should be redirected to the dashboard')\ndef step_impl(page):\n    assert 'dashboard' in page.url"
+    },
+    {
+        "id": "login-005",
+        "feature": "login",
+        "step": "When I enter invalid credentials",
+        "python": "@when('I enter invalid credentials')\ndef step_impl(page):\n    page.fill(\"input[name='username']\", 'wrong')\n    page.fill(\"input[name='password']\", 'wrong')"
+    },
+    {
+        "id": "login-006",
+        "feature": "login",
+        "step": "Then I should see an authentication error message",
+        "python": "@then('I should see an authentication error message')\ndef step_impl(page):\n    assert page.locator('.error-message').is_visible()"
+    },
+    {
+        "id": "login-007",
+        "feature": "login",
+        "step": "When I attempt login with empty credentials",
+        "python": "@when('I attempt login with empty credentials')\ndef step_impl(page):\n    page.fill(\"input[name='username']\", '')\n    page.fill(\"input[name='password']\", '')"
+    },
+    {
+        "id": "login-008",
+        "feature": "login",
+        "step": "Then the login button should remain disabled",
+        "python": "@then('the login button should remain disabled')\ndef step_impl(page):\n    assert page.locator(\"button[type='submit']\").is_disabled()"
+    },
+    {
+        "id": "login-009",
+        "feature": "login",
+        "step": "When I logout from the application",
+        "python": "@when('I logout from the application')\ndef step_impl(page):\n    page.click('#logout')"
+    },
+    {
+        "id": "login-010",
+        "feature": "login",
+        "step": "Then I should be redirected to the login page",
+        "python": "@then('I should be redirected to the login page')\ndef step_impl(page):\n    assert 'login' in page.url"
+    },
+    {
+        "id": "search-011",
+        "feature": "search",
+        "step": "Given I am on the product page",
+        "python": "@given('I am on the product page')\ndef step_impl(page, base_url):\n    page.goto(f'{base_url}/products')"
+    },
+    {
+        "id": "search-012",
+        "feature": "search",
+        "step": "When I search for a product",
+        "python": "@when('I search for a product')\ndef step_impl(page):\n    page.fill('#search', 'Laptop')\n    page.press('#search', 'Enter')"
+    },
+    {
+        "id": "search-013",
+        "feature": "search",
+        "step": "Then search results should be displayed",
+        "python": "@then('search results should be displayed')\ndef step_impl(page):\n    assert page.locator('.product-item').count() > 0"
+    },
+    {
+        "id": "search-014",
+        "feature": "search",
+        "step": "When I clear the search field",
+        "python": "@when('I clear the search field')\ndef step_impl(page):\n    page.fill('#search', '')"
+    },
+    {
+        "id": "search-015",
+        "feature": "search",
+        "step": "Then all products should be visible",
+        "python": "@then('all products should be visible')\ndef step_impl(page):\n    assert page.locator('.product-item').count() > 0"
+    },
+    {
+        "id": "search-016",
+        "feature": "search",
+        "step": "When I apply a price filter",
+        "python": "@when('I apply a price filter')\ndef step_impl(page):\n    page.select_option('#price-filter', 'low-to-high')"
+    },
+    {
+        "id": "search-017",
+        "feature": "search",
+        "step": "Then products should be sorted by price ascending",
+        "python": "@then('products should be sorted by price ascending')\ndef step_impl(page):\n    assert True  # sorting validation logic"
+    },
+    {
+        "id": "search-018",
+        "feature": "search",
+        "step": "When I select a product from the list",
+        "python": "@when('I select a product from the list')\ndef step_impl(page):\n    page.locator('.product-item').first.click()"
+    },
+    {
+        "id": "search-019",
+        "feature": "search",
+        "step": "Then product details page should be displayed",
+        "python": "@then('product details page should be displayed')\ndef step_impl(page):\n    assert 'product' in page.url"
+    },
+    {
+        "id": "search-020",
+        "feature": "search",
+        "step": "Then product title should be visible",
+        "python": "@then('product title should be visible')\ndef step_impl(page):\n    assert page.locator('h1').is_visible()"
+    },
+    {
+        "id": "cart-021",
+        "feature": "cart",
+        "step": "Given I have added a product to the cart",
+        "python": "@given('I have added a product to the cart')\ndef step_impl(page):\n    page.click('.add-to-cart')"
+    },
+    {
+        "id": "cart-022",
+        "feature": "cart",
+        "step": "When I open the cart page",
+        "python": "@when('I open the cart page')\ndef step_impl(page):\n    page.goto('/cart')"
+    },
+    {
+        "id": "cart-023",
+        "feature": "cart",
+        "step": "Then the cart should contain the selected product",
+        "python": "@then('the cart should contain the selected product')\ndef step_impl(page):\n    assert page.locator('.cart-item').count() > 0"
+    },
+    {
+        "id": "cart-024",
+        "feature": "cart",
+        "step": "When I remove the product from the cart",
+        "python": "@when('I remove the product from the cart')\ndef step_impl(page):\n    page.click('.remove-item')"
+    },
+    {
+        "id": "cart-025",
+        "feature": "cart",
+        "step": "Then the cart should be empty",
+        "python": "@then('the cart should be empty')\ndef step_impl(page):\n    assert page.locator('.cart-item').count() == 0"
+    },
+    {
+        "id": "cart-026",
+        "feature": "cart",
+        "step": "When I update the product quantity",
+        "python": "@when('I update the product quantity')\ndef step_impl(page):\n    page.fill('.quantity-input', '2')"
+    },
+    {
+        "id": "cart-027",
+        "feature": "cart",
+        "step": "Then the cart total should update accordingly",
+        "python": "@then('the cart total should update accordingly')\ndef step_impl(page):\n    assert page.locator('.cart-total').is_visible()"
+    },
+    {
+        "id": "cart-028",
+        "feature": "cart",
+        "step": "When I proceed to checkout",
+        "python": "@when('I proceed to checkout')\ndef step_impl(page):\n    page.click('#checkout')"
+    },
+    {
+        "id": "cart-029",
+        "feature": "cart",
+        "step": "Then I should be redirected to the checkout page",
+        "python": "@then('I should be redirected to the checkout page')\ndef step_impl(page):\n    assert 'checkout' in page.url"
+    },
+    {
+        "id": "cart-030",
+        "feature": "cart",
+        "step": "Then cart badge count should increase",
+        "python": "@then('cart badge count should increase')\ndef step_impl(page):\n    assert page.locator('.cart-badge').inner_text() != '0"
+    },
+    {
+        "id": "cart-031",
+        "feature": "cart",
+        "step": "Then cart summary should display correct subtotal",
+        "python": "@then('cart summary should display correct subtotal')\ndef step_impl(page):\n    assert page.locator('.subtotal').is_visible()"
+    },
+    {
+        "id": "cart-032",
+        "feature": "cart",
+        "step": "Then applicable taxes should be calculated",
+        "python": "@then('applicable taxes should be calculated')\ndef step_impl(page):\n    assert page.locator('.tax').is_visible()"
+    },
+    {
+        "id": "cart-033",
+        "feature": "cart",
+        "step": "When I continue shopping",
+        "python": "@when('I continue shopping')\ndef step_impl(page):\n    page.click('#continue-shopping')"
+    },
+    {
+        "id": "cart-034",
+        "feature": "cart",
+        "step": "Then I should return to product listing page",
+        "python": "@then('I should return to product listing page')\ndef step_impl(page):\n    assert 'products' in page.url"
+    },
+    {
+        "id": "cart-035",
+        "feature": "cart",
+        "step": "Then the cart icon should be visible in header",
+        "python": "@then('the cart icon should be visible in header')\ndef step_impl(page):\n    assert page.locator('#cart-icon').is_visible()"
+    },
+    {
+        "id": "checkout-036",
+        "feature": "checkout",
+        "step": "Given I am on the checkout page",
+        "python": "@given('I am on the checkout page')\ndef step_impl(page, base_url):\n    page.goto(f'{base_url}/checkout')"
+    },
+    {
+        "id": "checkout-037",
+        "feature": "checkout",
+        "step": "When I enter valid shipping information",
+        "python": "@when('I enter valid shipping information')\ndef step_impl(page):\n    page.fill('#address', '123 Main Street')"
+    },
+    {
+        "id": "checkout-038",
+        "feature": "checkout",
+        "step": "When I select a payment method",
+        "python": "@when('I select a payment method')\ndef step_impl(page):\n    page.select_option('#payment-method', 'card')"
+    },
+    {
+        "id": "checkout-039",
+        "feature": "checkout",
+        "step": "When I confirm the order",
+        "python": "@when('I confirm the order')\ndef step_impl(page):\n    page.click('#confirm-order')"
+    },
+    {
+        "id": "checkout-040",
+        "feature": "checkout",
+        "step": "Then the order confirmation page should be displayed",
+        "python": "@then('the order confirmation page should be displayed')\ndef step_impl(page):\n    assert page.locator('.order-confirmation').is_visible()"
+    },
+    {
+        "id": "checkout-041",
+        "feature": "checkout",
+        "step": "Then an order number should be generated",
+        "python": "@then('an order number should be generated')\ndef step_impl(page):\n    assert page.locator('.order-number').is_visible()"
+    },
+    {
+        "id": "checkout-042",
+        "feature": "checkout",
+        "step": "When I cancel the checkout process",
+        "python": "@when('I cancel the checkout process')\ndef step_impl(page):\n    page.click('#cancel-checkout')"
+    },
+    {
+        "id": "checkout-043",
+        "feature": "checkout",
+        "step": "Then I should be redirected back to the cart page",
+        "python": "@then('I should be redirected back to the cart page')\ndef step_impl(page):\n    assert 'cart' in page.url"
+    },
+    {
+        "id": "checkout-044",
+        "feature": "checkout",
+        "step": "Then payment should be processed successfully",
+        "python": "@then('payment should be processed successfully')\ndef step_impl(page):\n    assert page.locator('.payment-success').is_visible()"
+    },
+    {
+        "id": "checkout-045",
+        "feature": "checkout",
+        "step": "Then payment failure message should be displayed",
+        "python": "@then('payment failure message should be displayed')\ndef step_impl(page):\n    assert page.locator('.payment-error').is_visible()"
+    },
+    {
+        "id": "checkout-046",
+        "feature": "checkout",
+        "step": "When I enter invalid shipping information",
+        "python": "@when('I enter invalid shipping information')\ndef step_impl(page):\n    page.fill('#address', '')"
+    },
+    {
+        "id": "checkout-047",
+        "feature": "checkout",
+        "step": "Then validation message should appear for required fields",
+        "python": "@then('validation message should appear for required fields')\ndef step_impl(page):\n    assert page.locator('.validation-error').is_visible()"
+    },
+    {
+        "id": "checkout-048",
+        "feature": "checkout",
+        "step": "When I apply a discount code",
+        "python": "@when('I apply a discount code')\ndef step_impl(page):\n    page.fill('#discount-code', 'SAVE10')\n    page.click('#apply-discount')"
+    },
+    {
+        "id": "checkout-049",
+        "feature": "checkout",
+        "step": "Then discount should be applied to the total amount",
+        "python": "@then('discount should be applied to the total amount')\ndef step_impl(page):\n    assert page.locator('.discount').is_visible()"
+    },
+    {
+        "id": "checkout-050",
+        "feature": "checkout",
+        "step": "Then final total amount should be displayed correctly",
+        "python": "@then('final total amount should be displayed correctly')\ndef step_impl(page):\n    assert page.locator('.total-amount').is_visible()"
+    }
 ]

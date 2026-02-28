@@ -15,7 +15,6 @@ from ai.rag.embedder import EmbeddingService
 from ai.rag.retriever import Retriever
 from ai.rag.text_chunker import TextChunker
 from ai.rag.vectordb import (
-	ChromaVectorStore,
 	InMemoryVectorStore,
 	PersistentInMemoryVectorStore,
 	QdrantVectorStore,
@@ -66,15 +65,6 @@ class AgentOrchestrator:
 				persist_path=self.config.rag.qdrant_persist_path,
 				collection_name=self.config.rag.qdrant_collection_name,
 			)
-		if backend == "chroma":
-			try:
-				return ChromaVectorStore(
-					persist_directory=self.config.rag.chroma_persist_directory,
-					collection_name=self.config.rag.chroma_collection_name,
-				)
-			except Exception as exc:  # noqa: BLE001
-				print(f"Warning: ChromaDB unavailable ({exc}). Falling back to in_memory vector store.")
-				return InMemoryVectorStore()
 		return InMemoryVectorStore()
 
 	def run(self, user_input: str) -> dict[str, Any]:

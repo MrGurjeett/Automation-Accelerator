@@ -84,9 +84,7 @@ ai:
     semantic_weight: 0.8
     keyword_weight: 0.2
     knowledge_base_dir: "ai/knowledge_base"
-    vector_store: "qdrant"            # "in_memory" | "in_memory_persist" | "qdrant" | "chroma"
+    vector_store: "qdrant"            # "in_memory" | "in_memory_persist" | "qdrant"
     in_memory_persist_path: ".vector_store/store.json"
-    chroma_persist_directory: ".chroma"
-    chroma_collection_name: "automation_kb"
     qdrant_persist_path: ".qdrant"
     qdrant_collection_name: "automation_kb"

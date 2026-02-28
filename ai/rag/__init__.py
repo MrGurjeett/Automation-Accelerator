@@ -2,7 +2,6 @@
 
 from ai.rag.embedder import EmbeddingService
 from ai.rag.vectordb import (
-    ChromaVectorStore,
     InMemoryVectorStore,
     PersistentInMemoryVectorStore,
     QdrantVectorStore,
@@ -15,7 +14,6 @@ from ai.rag.text_chunker import TextChunker, TextChunk
 
 __all__ = [
     "EmbeddingService",
-    "ChromaVectorStore",
     "InMemoryVectorStore",
     "PersistentInMemoryVectorStore",
     "QdrantVectorStore",

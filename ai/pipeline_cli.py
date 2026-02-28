@@ -13,7 +13,7 @@ from ai.rag.document_loader import DocumentLoader
 from ai.rag.embedder import EmbeddingService
 from ai.rag.retriever import Retriever
 from ai.rag.text_chunker import TextChunker
-from ai.rag.vectordb import ChromaVectorStore, InMemoryVectorStore, VectorDocument
+from ai.rag.vectordb import InMemoryVectorStore, VectorDocument
 from ai.rag.vectordb import PersistentInMemoryVectorStore
 from ai.rag.vectordb import QdrantVectorStore
 from recorder.launch_codegen import LaunchCodegen
@@ -64,15 +64,6 @@ def _build_vector_store(config: AIConfig):
             persist_path=config.rag.qdrant_persist_path,
             collection_name=config.rag.qdrant_collection_name,
         )
-    if config.rag.vector_store == "chroma":
-        try:
-            return ChromaVectorStore(
-                persist_directory=config.rag.chroma_persist_directory,
-                collection_name=config.rag.chroma_collection_name,
-            )
-        except Exception as exc:  # noqa: BLE001
-            print(f"Warning: ChromaDB unavailable ({exc}). Falling back to in_memory vector store.")
-            return InMemoryVectorStore()
     return InMemoryVectorStore()
 
 

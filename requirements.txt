@@ -9,19 +9,10 @@ allure-pytest>=2.13.0
 
 # Data handling
 pyyaml>=6.0
-pandas>=2.0.0
-openpyxl>=3.1.0
-
-# API testing
-requests>=2.31.0
-
-# Database
-psycopg2-binary>=2.9.0
 
 # Logging and utilities
 python-dotenv>=1.0.0
-colorlog>=6.7.0
 
 # Agentic AI + RAG
 openai>=1.51.0
-chromadb>=0.5.0
+qdrant-client>=1.7.0
