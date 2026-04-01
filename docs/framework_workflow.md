@@ -1,155 +1,375 @@
 # Automation Accelerator Framework - How It Works
 
-This document provides a comprehensive, end-to-end breakdown of how the highly advanced Agentic AI Test Automation Framework operates. It traces the lifecycle of a request from the initial human input all the way down to script generation and test execution.
+This document provides a comprehensive, end-to-end breakdown of how the AI-Governed BDD Automation Framework operates.
 
 ---
 
-## ⏺️ Stage 1: UI Action Codegen & Recording (`stage1-codegen`)
+## 🚀 Quick Start — Running the Framework
 
-The journey formally begins when the automation engineer initiates the codegen pipeline. Instead of writing tests from scratch, the framework is designed to *watch* you.
+### Prerequisites
 
-### Action Capture
-If the `stage1-codegen` CLI command is called:
-*   **Files Involved:**
-    *   `ai/pipeline_cli.py`: Evaluates the command arguments.
-    *   `recorder/launch_codegen.py`: Starts a background process invoking Playwright's native `codegen` inspector on your specified URL.
-*   **What happens:** Playwright boots a live Chrome/Firefox viewport. As the engineer clicks buttons, types in text forms, and logs into the target website, Playwright actively synthesizes those interactions down into raw Python equivalents, generating a raw file typically designated as `codegen_output.py`.
+- Python 3.12+ with venv activated (`.venv/`)
+- Azure OpenAI credentials in `.env` (`AZURE_OPENAI_API_KEY`, `AZURE_OPENAI_ENDPOINT`)
+- Playwright browsers installed (`playwright install chromium`)
+- Excel test-case file placed in the `input/` folder
 
----
+### Commands
 
-## 🛠️ Stage 2: Baseline Post-Processing (`stage2-baseline`)
+| Command | What It Does |
+|---|---|
+| `python main.py` | **Full E2E** — auto-detect Excel → validate → normalize via Azure OpenAI + Qdrant → generate feature → run tests in headed Chromium |
+| `python main.py --generate-only` | **Generate only** — same pipeline but skips test execution |
+| `python main.py --force` | Force regeneration even if Excel is unchanged |
+| `python main.py --force --generate-only` | Force regenerate, skip tests |
+| `python main.py --excel path/to/file.xlsx` | Use a specific Excel file instead of auto-detecting from `input/` |
 
-Raw codegen output is highly unstructured and unreadable. You do not want a 500-line script of raw `page.locator().click()` calls. The framework steps in here to convert raw recordings into standard Page Object Modals (POM) and baseline BDD features.
+### Single Entrypoint
 
-### AST Manipulation & Class Scaffolding
-*   **Files Involved:**
-    *   `recorder/postprocess_codegen.py`: A powerhouse analyzer that parses the `codegen_output.py` Python AST (Abstract Syntax Tree). 
-    *   `postprocess_config.json`: Evaluates fallback locators and variable typings.
-*   **What happens:** 
-    1.  *Page Objects generated:* The script guesses the page names from the URL locators and parses actions into exact method bindings (like `def submit_login_button(self):`). It writes these directly to `pages/generated/`.
-    2.  *Baseline File Spawning:* It extracts the narrative intent of those clicks and formulates a crude `features/generated.feature` file and matching step definitions `features/steps/step_definitions/generated_steps.py`.
+The **only** file a user needs to execute is:
 
----
+```
+python main.py
+```
 
-## 🧠 Stage 3 & 4: RAG Knowledge Indexing and LLM Enhancement (`stage3-index` & `stage4-enhance`)
+Everything is automatic — zero prompts, zero manual file editing, zero approval steps.
 
-### Indexing the Baseline
-The previously generated "dumb" baseline code needs to be indexed so the AI can understand *exactly* what UI elements currently exist.
-*   **Files Involved:** `ai/rag/document_loader.py`, `ai/rag/vectordb.py` (Qdrant).
-*   **What happens:** By running `stage3-index`, the framework takes your newly crafted `codegen_output.py`, `generated.feature`, and `pages/generated` classes, converts them into chunks, gets their Azure embeddings representations, and shoves those into the local Qdrant memory.
+### What Happens When You Run `python main.py`
 
-### Intent, Planning & Refinement Generation
-This is the Agentic AI "Brain" at work. You pass a prompt parameter such as: *"Using my recorded actions, make the login robust to handle 3 types of bad passwords and add negative testing."*
+```
+Step  1  │  Auto-detect .xlsx file in input/ folder
+Step  2  │  Schema validation (exact column match — hard stop on failure)
+Step  3  │  Group rows by TC_ID
+Step  4  │  Action & workflow validation per TC (hard stop on failure)
+Step  5  │  AI normalisation via Azure OpenAI + Qdrant RAG (per step)
+Step  6  │  Confidence gate at 0.85 per TC (reject below threshold)
+Step  7  │  Generate parameterized .feature file (auto-overwrite)
+Step  8  │  Create versioned folder under artifacts/versions/ (SHA256 hash)
+Step  9  │  Auto-execute pytest in headed Chromium browser
+Step 10  │  Print structured logs + exit with test result code
+```
 
-*   **Files Involved:**
-    *   `ai/agents/orchestrator.py` & `intent_agent.py`: Parses the fact you want to "enhance" the previous feature.
-    *   `ai/rag/retriever.py`: Hits Qdrant database to dig up your generated base Page Objects and Locators from Stage 2.
-    *   `ai/generator/feature_generator.py` & `step_generator.py`: Takes the parsed intent + the human's query + the retrieved codegen memory block and hits `Azure OpenAI` (`gpt-4.1`). 
-*   **What happens:** Azure returns beautiful, fine-tuned, production-grade Gherkin BDD (`generated_enhanced.feature`) and robust Pytest Step Definitions (`generated_steps_enhanced.py`) that handles edge cases perfectly without the human having to do anything but click buttons in Stage 1!
+### Excel Contract (Strict Schema)
 
----
+The Excel file **must** have exactly these columns:
 
-## 🚀 Final Execute: Pytest Execution
-Finally, with fine-tuned, enhanced files ready in `features/` directory...
+| TC_ID | Page | Action | Target | Value | Expected |
+|---|---|---|---|---|---|
+| TC01 | Login | navigate | Login Page | - | - |
+| TC01 | Login | fill | Username | student | - |
+| TC01 | Login | fill | Password | Password123 | - |
+| TC01 | Login | click | Submit Button | - | - |
+| TC01 | Login | verify_text | Success Message | - | Logged In Successfully |
 
-*   **Files Involved:** `pytest.ini`, `features/steps/hooks.py`
-*   **What happens:** Standard Pytest runner executes. Pytest-BDD maps the LLM-enhanced `.feature` file sentences accurately into the customized python step definitions that then drive standard Headless Playwright workers across the UI. Test results execute cleanly and pump out formatted Allure results!
+- **TC_ID**: Groups steps into a test case
+- **Page**: Must match a registered POM in `core/pages/page_registry.py`
+- **Action**: One of `navigate`, `fill`, `click`, `verify_text`
+- **Target**: Must match a key in the POM's `SUPPORTED_FIELDS`
+- **Value**: Data to fill (leave blank for empty-field tests, use `-` for non-fill actions)
+- **Expected**: Expected text for `verify_text` actions
 
-### Step 1: Configuration Loading
-When a script starts (like `pipeline_cli.py` or a custom test file), it boot-straps the system using the unified config layer.
+### Auto-Versioning Behavior
 
-*   **Files Involved:**
-    *   `config/config.yaml`: Contains fallback settings for vector DB, timeout logic, reporting directories, and more.
-    *   `.env`: Holds your sensitive API credentials (Azure OpenAI strings).
-    *   `ai/config.py`: The `AIConfig` and `AzureOpenAISettings` classes parse both the yaml and the env file securely into python objects logic can use.
-*   **What happens:** The system binds Azure credentials and figures out the RAG settings (e.g., semantic weights vs. keyword matching).
+| Condition | Behavior |
+|---|---|
+| Excel changed | Full pipeline runs, new version folder created |
+| Excel unchanged | Skips regeneration, runs tests from existing feature |
+| `--force` flag | Forces full pipeline regardless of hash |
 
----
+### Key Files (Do NOT Modify During Execution)
 
-## 🤖 Phase 2: Agent Orchestration & Planning (The "Brain")
+| File | Purpose |
+|---|---|
+| `core/pages/login_page.py` | POM — all locators live here exclusively |
+| `core/pages/base_page.py` | Playwright wrapper (fill, click, verify) |
+| `core/pages/page_registry.py` | Maps Excel Page column to POM classes |
+| `core/steps/conftest.py` | Playwright fixtures, BASE_URL, POM setup |
+| `core/steps/test_generated.py` | Step definitions matching generated Gherkin |
 
-When you provide a prompt like, *"Generate a login feature for demoqa"*, the system orchestrates sub-agents to dissect and act on the prompt.
+These files are **frozen** — the pipeline never modifies them.
 
-### Step 2: Orchestrator Activation
-The orchestrator spins up the internal database clients, embedding connections, and sub-agents. 
+### Output Files (Auto-Generated)
 
-*   **Files Involved:**
-    *   `ai/agents/orchestrator.py`: The primary engine.
-    *   `ai/clients/azure_openai_client.py`: Establish connection to Azure endpoints with a robust retry mechanism.
-
-### Step 3: Intent Classification
-The orchestrator checks your request to figure out what you want.
-
-*   **Files Involved:**
-    *   `ai/agents/intent_agent.py`: Parses the raw prompt string (`query`) and maps it to `IntentType` (e.g., `GENERATE_FEATURE`, `INDEX_KNOWLEDGE`, `RAG_QUERY`, etc.). It uses keyword evaluations to rank the probability of an intent.
-
-### Step 4: Plan Construction
-Once the framework knows *what* you want, it details *how* to do it.
-
-*   **Files Involved:**
-    *   `ai/agents/planner_agent.py`: Receives the intent from Step 3 and constructs a sequential list of steps called a `PlanStep`. For standard generation, the plan is always: 1. `Retrieve context` -> 2. `Generate feature`.
-
----
-
-## 📚 Phase 3: Retrieval-Augmented Generation (RAG Workflow)
-
-LLMs sometimes hallucinate. This architecture counters that by indexing "Knowledge" directly from your codebase or specific framework documents to feed into Azure so it outputs correct code format.
-
-### Step 5: Document Indexing (If running `INDEX_KNOWLEDGE`)
-If adding contexts (or running `stage3-index` from CLI), raw text is converted to math variables (vectors).
-
-*   **Files Involved:**
-    *   `ai/rag/document_loader.py`: Reads baseline code (`.py`, `.md`, `.feature` files).
-    *   `ai/rag/text_chunker.py`: Splits large documents safely into readable `900` token chunks.
-    *   `ai/rag/embedder.py`: Sends chunks to Azure to get `text-embedding-3-large` mathematical arrays.
-    *   `ai/rag/vectordb.py`: Saves these arrays permanently inside the `QdrantVectorStore`. 
-
-### Step 6: Context Retrieval (If running Code Generation)
-When you ask it to generate code, it searches the vector DB for similarities first. 
-
-*   **Files Involved:**
-    *   `ai/rag/retriever.py`: Converts your query into an embedding, checks `Qdrant` DB against closest math similarities, and pulls relevant past file logic directly from the DB. 
+| File | Purpose |
+|---|---|
+| `generated/features/login.feature` | Generated BDD scenarios (auto-overwritten) |
+| `artifacts/versions/<hash>_<timestamp>/` | Versioned copy of each generation |
+| `artifacts/latest.json` | Manifest tracking current Excel hash |
 
 ---
 
-## 📝 Phase 4: Code Generation Strategy
+## Architecture Deep Dive
 
-Inside the Execution environment, passing the retrieved code blocks + your user prompt forward to the Azure GPT models to get actual syntax.
+### Project Structure (Current)
 
-### Step 7: Executing The Generation
-*   **Files Involved:**
-    *   `ai/agents/execution_agent.py`: The `ExecutionAgent` steps through your `PlannerAgent`'s outline iteratively.
-    *   `ai/generator/feature_generator.py`: Takes the context and prompt, adds system instructions limits (must generate valid BDD Gherkin), and builds the `.feature` file text.
-    *   `ai/generator/step_generator.py`: Once the feature file completes, it uses that text internally to auto-generate identical `pytest-bdd` Python parser functions for `features/steps/`.
-    *   `ai/transformers/normalizer.py`: Ensures outputs are clean and formats them stringently.
+```
+Automation-Accelerator/
+├── main.py                         # Single entrypoint — orchestrates full pipeline
+├── input/                          # Drop your .xlsx here (auto-detected)
+│   └── test_cases.xlsx
+├── excel/
+│   └── excel_reader.py             # Reads .xlsx via pandas, returns list[dict]
+├── validator/
+│   ├── schema_validator.py         # Exact column match check (hard stop)
+│   ├── action_validator.py         # Per-row action/target/value validation
+│   └── workflow_validator.py       # Per-TC sequence validation (navigate first, etc.)
+├── ai/
+│   ├── config.py                   # AIConfig — loads .env + config.yaml
+│   ├── normalizer.py               # Azure OpenAI + Qdrant RAG normaliser
+│   ├── security.py                 # Prompt injection guards
+│   ├── clients/
+│   │   └── azure_openai_client.py  # Azure OpenAI SDK wrapper with retry
+│   └── rag/
+│       ├── embedder.py             # text-embedding-3-large embedding service
+│       ├── retriever.py            # Qdrant similarity search
+│       ├── vectordb.py             # Qdrant local persistent vector store
+│       ├── text_chunker.py         # Document chunking utility
+│       └── document_loader.py      # File-based document loader
+├── generator/
+│   ├── feature_generator.py        # Generates parameterized Gherkin .feature files
+│   └── version_manager.py          # SHA256 hash-based versioning + manifest
+├── execution/
+│   └── runner.py                   # Auto-runs pytest as subprocess, parses results
+├── core/                           # FROZEN — never modified by pipeline
+│   ├── pages/
+│   │   ├── base_page.py            # Playwright wrapper (fill, click, verify_text)
+│   │   ├── login_page.py           # POM — all locators in SUPPORTED_FIELDS
+│   │   └── page_registry.py        # Maps Excel "Page" column → POM class
+│   └── steps/
+│       ├── conftest.py             # Playwright fixtures, BASE_URL, POM instantiation
+│       └── test_generated.py       # Step definitions matching generated Gherkin
+├── generated/
+│   └── features/
+│       └── login.feature           # Auto-generated (overwritten each run)
+├── artifacts/
+│   ├── latest.json                 # Manifest with current Excel hash
+│   └── versions/                   # Versioned snapshots per generation
+├── config/
+│   └── config.yaml                 # RAG / Azure OpenAI settings
+├── .env                            # Azure OpenAI credentials (never committed)
+└── pytest.ini                      # Playwright + pytest-bdd runner config
+```
 
 ---
 
-## 🚀 Phase 5: Pipeline Codegen & Execution (UI & End-to-End)
+## 📥 Phase 1: Excel Ingestion & Validation
 
-Optionally, you can use Playwright built-in configurations to record code or finally execute the full setup!
+### Step 1: Auto-Detect Excel
 
-### Step 8: Playwright Code Generation (Optional CLI feature)
-*   **Files Involved:**
-    *   `recorder/launch_codegen.py` & `recorder/action_recorder.py`: If you run the `stage-all` pipeline, this module uses Playwright to open a browser and records human actions directly using AST/Python AST manipulations to output clean page object files.
+When `python main.py` runs, it scans the `input/` folder for a single `.xlsx` file.
 
-### Step 9: Final Test Execution
-Ultimately, the goal is always execution. Standard Pytest testing architecture dominates this side.
+- **File:** `main.py` → `detect_excel()`
+- **Behaviour:** Raises `FileNotFoundError` if no `.xlsx` found, raises `ValueError` if multiple `.xlsx` files exist.
 
-*   **Files Involved:**
-    *   `pytest.ini`: Controls runner configurations.
-    *   `features/steps/conftest.py` & `hooks.py`: Setup environment variables locally for Playwright browsers before executing feature files.
-    *   `tests/test_api.py` or `.feature` runner files: Output is tested and validated natively here!
+### Step 2: Version Check (SHA256)
+
+Before doing any work, the pipeline checks if the Excel has changed since the last run.
+
+- **File:** `generator/version_manager.py` → `has_changed()`
+- **Behaviour:**
+  - Computes SHA256 hash of the Excel file
+  - Compares against `artifacts/latest.json`
+  - If unchanged → skips regeneration, runs tests from existing feature (unless `--force`)
+  - If changed → proceeds with full pipeline
+
+### Step 3: Read Excel
+
+- **File:** `excel/excel_reader.py` → `read_excel()`
+- **Behaviour:**
+  - Reads `.xlsx` via pandas with `dtype=str`
+  - Blank Value cells → empty string `""` (supports empty-field tests)
+  - All other blank cells → `"-"`
+  - Returns `list[dict]`
+
+### Step 4: Schema Validation (Hard Stop)
+
+- **File:** `validator/schema_validator.py` → `validate_schema()`
+- **Behaviour:** Checks that columns match **exactly**: `TC_ID`, `Page`, `Action`, `Target`, `Value`, `Expected`. Any mismatch → `ValueError` → pipeline aborts.
+
+### Step 5: Action & Workflow Validation (Hard Stop, Per TC)
+
+- **File:** `validator/action_validator.py` → `validate_action()`
+  - Action must be in `{navigate, fill, click, verify_text}`
+  - Page must exist in `PAGE_REGISTRY`
+  - Target must exist in POM's `SUPPORTED_FIELDS`
+  - `fill` requires a non-dash Value
+  - `verify_text` requires a non-dash Expected
+
+- **File:** `validator/workflow_validator.py` → `validate_workflow()`
+  - First step must be `navigate`
+  - No duplicate navigates in a single TC
+  - At least 2 steps per TC
 
 ---
 
-### Basic System Data Flow Summary
-1.  **START:** Human executes CLI script `pipeline_cli.py` or custom script.
-2.  **READ:** Framework loads `.env` and `config.yaml`.
-3.  **THINK (`AgentOrchestrator`):**
-    *   `IntentAgent` guesses what user wants.
-    *   `PlannerAgent` creates the step-by-step pipeline state map.
-4.  **SEARCH (`Retriever`):** Connects to `Qdrant` vector storage to find code snippets. 
-5.  **ASK (`Generator`):** Sends Context -> Azure API -> Gets back code string.
-6.  **SAVE (`PostProcess`)**: Turns raw LLM output into concrete directories (`pages/generated/`, `features/`).
-7.  **EXECUTE (`pytest`)**: Pytest runs Playwright browser steps against generated code!
+## 🧠 Phase 2: AI Normalisation (Azure OpenAI + Qdrant RAG)
+
+AI is **mandatory** during generation. AI is **never** used during test execution.
+
+### Step 6: Qdrant Knowledge Base Seeding
+
+- **File:** `ai/normalizer.py` → `AINormaliser.__init__()`
+- **Behaviour:**
+  - Embeds all BDD reference steps (navigate, fill, click, verify_text targets) using `text-embedding-3-large`
+  - Upserts vectors into a local Qdrant persistent store (`.qdrant/` directory)
+  - Collection name: `automation_kb`
+
+### Step 7: Per-Step Normalisation
+
+For each step in each TC:
+
+1. **Embed the query** — convert `(action, target)` into a vector via Azure embeddings
+2. **Qdrant similarity search** — retrieve top-K matching reference steps from the KB
+3. **Build RAG context** — format retrieved steps as structured context
+4. **GPT-4.1 prompt** — send the step + RAG context to Azure OpenAI with strict JSON output rules
+5. **Parse response** — extract `normalized_action`, `normalized_target`, `value`, `expected`, `confidence`
+6. **Confidence gate** — if any step in a TC scores below **0.85**, the entire TC is **rejected**
+
+- **Files:**
+  - `ai/normalizer.py` → `AINormaliser.normalise_tc()`
+  - `ai/clients/azure_openai_client.py` → handles Azure API calls with retry
+  - `ai/rag/embedder.py` → `EmbeddingService` (text-embedding-3-large)
+  - `ai/rag/retriever.py` → `Retriever` (Qdrant similarity search)
+  - `ai/rag/vectordb.py` → `QdrantVectorStore` (local persistent store)
+
+### Output
+
+Each accepted TC produces a list of `NormalisedStep` objects:
+```python
+@dataclass
+class NormalisedStep:
+    normalized_action: str    # e.g. "fill"
+    normalized_target: str    # e.g. "Username"
+    value: str | None         # e.g. "student"
+    expected: str | None      # e.g. "Logged In Successfully"
+    confidence: float         # e.g. 1.0
+```
+
+---
+
+## 📝 Phase 3: Feature Generation & Versioning
+
+### Step 8: Generate Parameterized Feature File
+
+- **File:** `generator/feature_generator.py`
+- **Behaviour:**
+  - Groups accepted TCs by **flow signature** (ordered sequence of action+target, ignoring data values)
+  - TCs with identical flow → merged into a single `Scenario Outline` with `Examples` table
+  - TCs with different flows → separate Scenario Outlines
+  - Empty values → represented as `[EMPTY]` sentinel in the Examples table
+  - Output written to `generated/features/<name>.feature` (auto-overwrite, no prompt)
+
+### Step 9: Version Folder (SHA256 + Timestamp)
+
+- **File:** `generator/version_manager.py`
+- **Behaviour:**
+  - Creates `artifacts/versions/<hash_12chars>_<YYYYMMDD_HHMMSS>/`
+  - Copies the generated `.feature` file there
+  - Updates `artifacts/latest.json` manifest with current hash
+
+---
+
+## 🚀 Phase 4: Automatic Test Execution
+
+### Step 10: Auto-Execute Pytest
+
+- **File:** `execution/runner.py` → `run_tests()`
+- **Behaviour:**
+  - Runs `pytest core/steps/test_generated.py` as a subprocess using the same Python interpreter
+  - All `pytest.ini` settings apply (headed Chromium, slow_mo, viewport, etc.)
+  - Streams output to console in real time
+  - Parses pass/fail/error counts from a quiet re-run
+  - Returns structured `TestResult` dataclass
+
+### Step 11: Pipeline Exit
+
+- `main.py` prints a final summary (Excel path, feature path, version folder, pass/fail counts)
+- Exits with the pytest exit code (0 = all passed, non-zero = failures)
+
+---
+
+## 🔒 Frozen Core Files (Never Modified by Pipeline)
+
+These files are manually maintained. The pipeline never touches them:
+
+| File | Role |
+|---|---|
+| `core/pages/base_page.py` | Thin Playwright wrapper — `fill_field()`, `click_field()`, `verify_text()`, `navigate_to()` |
+| `core/pages/login_page.py` | POM with `SUPPORTED_FIELDS` dict — maps UI element names to Playwright locators |
+| `core/pages/page_registry.py` | `PAGE_REGISTRY` dict — maps Excel "Page" values to POM classes |
+| `core/steps/conftest.py` | `BASE_URL`, Playwright browser fixtures, POM instantiation fixture |
+| `core/steps/test_generated.py` | pytest-bdd step definitions (`@given`, `@when`, `@then`) matching generated Gherkin |
+
+### How Step Definitions Work at Runtime
+
+```
+Feature file says:    When I fill "Username" with "student"
+                              ↓
+Step definition:      @when('I fill "{field}" with "{value}"')
+                              ↓
+POM lookup:           pom.SUPPORTED_FIELDS["Username"] → page.locator("#username")
+                              ↓
+Playwright:           locator.fill("student")
+```
+
+No AI involved at runtime — pure deterministic Playwright execution.
+
+---
+
+## ⚙️ Configuration
+
+### `.env` (Credentials)
+```
+AZURE_OPENAI_API_KEY=your-key
+AZURE_OPENAI_ENDPOINT=https://your-instance.openai.azure.com/
+```
+
+### `config/config.yaml` (Settings)
+Contains Azure OpenAI deployment names, RAG parameters, embedding model config, and Qdrant settings.
+
+### `pytest.ini` (Test Runner)
+- `testpaths = tests core/steps`
+- `bdd_features_base_dir = generated/features/`
+- `addopts = --headed --browser chromium -v`
+- `timeout = 300`
+
+---
+
+## 📊 Data Flow Summary
+
+```
+input/test_cases.xlsx
+    │
+    ▼
+┌─────────────────────────┐
+│  excel/excel_reader.py  │  Read .xlsx → list[dict]
+└───────────┬─────────────┘
+            ▼
+┌──────────────────────────────┐
+│  validator/                  │  Schema + Action + Workflow checks (hard stop)
+│  schema_validator.py         │
+│  action_validator.py         │
+│  workflow_validator.py       │
+└───────────┬──────────────────┘
+            ▼
+┌──────────────────────────────┐
+│  ai/normalizer.py            │  Azure OpenAI + Qdrant RAG
+│  ai/rag/embedder.py          │  Embed → Search → Normalise
+│  ai/rag/retriever.py         │  Confidence gate at 0.85
+│  ai/clients/azure_openai_client.py │
+└───────────┬──────────────────┘
+            ▼
+┌──────────────────────────────┐
+│  generator/                  │  Group by flow → Scenario Outline
+│  feature_generator.py        │  Write .feature (auto-overwrite)
+│  version_manager.py          │  SHA256 versioned folder
+└───────────┬──────────────────┘
+            ▼
+┌──────────────────────────────┐
+│  execution/runner.py         │  pytest subprocess → headed Chromium
+│  core/steps/test_generated.py│  Step defs → POM → Playwright
+│  core/pages/login_page.py    │  Locators (#username, #password, etc.)
+└──────────────────────────────┘
+            ▼
+        TEST RESULTS
+    (exit code 0 = all passed)
+```

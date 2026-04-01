@@ -1,106 +1,91 @@
+"""Sample UI tests.
+
+These are *integration* tests: they require a reachable web app and
+working credentials. They are marked `ui` and are skipped by default.
+Enable with:
+
+  - `--run-ui` or `RUN_UI_TESTS=1`
+  - `BASE_URL=...`
+  - optionally `UI_USERNAME` / `UI_PASSWORD`
 """
-Sample test module
-Demonstrates basic Playwright testing without BDD
-"""
-import pytest
-from pages.login_page import LoginPage
-from pages.home_page import HomePage
-from utils.data_loader import DataLoader
+
+from __future__ import annotations
+
+import os
 import logging
+
+import pytest
+from playwright.sync_api import expect
+
+from core.pages.login_page import LoginPage
+from utils.data_loader import DataLoader
 
 logger = logging.getLogger(__name__)
 
+pytestmark = pytest.mark.ui
+
+
+def _get_ui_credentials() -> tuple[str, str]:
+    username = os.environ.get("UI_USERNAME", "").strip()
+    password = os.environ.get("UI_PASSWORD", "").strip()
+    if username and password:
+        return username, password
+
+    user_data = DataLoader.get_test_data("users.valid_user")
+    return str(user_data.get("username", "")), str(user_data.get("password", ""))
+
+
+def _index_url(base_url: str) -> str:
+    base = base_url.rstrip("/")
+    if base.lower().endswith((".html", ".htm")):
+        return base
+    return f"{base}/index.htm"
+
 
 class TestLogin:
-    """Test cases for login functionality"""
+    """Login flow smoke tests."""
 
     def test_successful_login(self, page, base_url):
-        """Test successful login with valid credentials"""
-        # Arrange
         login_page = LoginPage(page)
-        user_data = DataLoader.get_test_data("users.valid_user")
-        
-        # Act
-        login_page.navigate_to(f"{base_url}/login")
-        login_page.login(user_data['username'], user_data['password'])
-        
-        # Assert
-        home_page = HomePage(page)
-        home_page.wait_for_url(f"{base_url}/home")
-        assert home_page.is_user_logged_in(), "User should be logged in"
-        
-        logger.info("Test successful login - PASSED")
+        username, password = _get_ui_credentials()
+
+        login_page.navigate_to(_index_url(base_url))
+        login_page.fill_field("Username", username)
+        login_page.fill_field("Password", password)
+        login_page.click_field("Login Button")
+
+        # ParaBank: successful login shows an "Accounts Overview" title.
+        login_page.verify_text("Accounts Overview Title", "Accounts Overview")
 
     def test_failed_login(self, page, base_url):
-        """Test failed login with invalid credentials"""
-        # Arrange
         login_page = LoginPage(page)
-        user_data = DataLoader.get_test_data("users.invalid_user")
-        
-        # Act
-        login_page.navigate_to(f"{base_url}/login")
-        login_page.login(user_data['username'], user_data['password'])
-        
-        # Assert
-        assert login_page.is_visible(login_page.ERROR_MESSAGE), "Error message should be displayed"
-        
-        logger.info("Test failed login - PASSED")
+        invalid = DataLoader.get_test_data("users.invalid_user")
 
-    @pytest.mark.parametrize("username,password,should_succeed", [
-        ("valid@test.com", "Test@123", True),
-        ("invalid@test.com", "wrong", False),
-    ])
+        login_page.navigate_to(_index_url(base_url))
+        login_page.fill_field("Username", str(invalid.get("username", "")))
+        login_page.fill_field("Password", str(invalid.get("password", "")))
+        login_page.click_field("Login Button")
+
+        error_locator = LoginPage.SUPPORTED_FIELDS["Error Message"](page)
+        expect(error_locator).to_be_visible()
+
+    @pytest.mark.parametrize(
+        "username,password,should_succeed",
+        [
+            ("valid@test.com", "Test@123", True),
+            ("invalid@test.com", "wrong", False),
+        ],
+    )
     def test_login_parametrized(self, page, base_url, username, password, should_succeed):
-        """Parametrized login test"""
-        # Arrange
         login_page = LoginPage(page)
-        
-        # Act
-        login_page.navigate_to(f"{base_url}/login")
-        login_page.login(username, password)
-        
-        # Assert
+
+        login_page.navigate_to(_index_url(base_url))
+        login_page.fill_field("Username", username)
+        login_page.fill_field("Password", password)
+        login_page.click_field("Login Button")
+
         if should_succeed:
-            home_page = HomePage(page)
-            assert home_page.is_user_logged_in(), "User should be logged in"
+            login_page.verify_text("Accounts Overview Title", "Accounts Overview")
         else:
-            assert login_page.is_visible(login_page.ERROR_MESSAGE), "Error should be shown"
-        
-        logger.info(f"Test login parametrized ({username}) - PASSED")
-
-
-class TestHomePage:
-    """Test cases for home page functionality"""
-
-    def test_search_functionality(self, page, base_url):
-        """Test search functionality"""
-        # Setup - login first
-        login_page = LoginPage(page)
-        user_data = DataLoader.get_test_data("users.valid_user")
-        login_page.navigate_to(f"{base_url}/login")
-        login_page.login(user_data['username'], user_data['password'])
-        
-        # Test search
-        home_page = HomePage(page)
-        search_term = "automation"
-        home_page.search_for(search_term)
-        
-        # Verify (simplified - would need actual search results verification)
-        logger.info("Test search functionality - PASSED")
-
-    def test_logout(self, page, base_url):
-        """Test logout functionality"""
-        # Setup - login first
-        login_page = LoginPage(page)
-        user_data = DataLoader.get_test_data("users.valid_user")
-        login_page.navigate_to(f"{base_url}/login")
-        login_page.login(user_data['username'], user_data['password'])
-        
-        # Test logout
-        home_page = HomePage(page)
-        home_page.click_logout()
-        
-        # Verify redirected to login
-        login_page.wait_for_url(f"{base_url}/login")
-        
-        logger.info("Test logout - PASSED")
+            error_locator = LoginPage.SUPPORTED_FIELDS["Error Message"](page)
+            expect(error_locator).to_be_visible()

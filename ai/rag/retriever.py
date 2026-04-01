@@ -60,9 +60,18 @@ class Retriever:
         lines: list[str] = []
         current = 0
         for item in retrieved:
-            source = str((item.get("metadata") or {}).get("source", "unknown"))
+            metadata = item.get("metadata") or {}
+            source = str(metadata.get("source", "unknown"))
+            entry_type = str(metadata.get("type", ""))
+            feature_domain = str(metadata.get("feature", ""))
             text = str(item.get("text", ""))
-            block = f"Source: {source}\n{text}\n"
+
+            # Structured KB entries get a domain header for clarity
+            if entry_type == "bdd_reference" and feature_domain:
+                block = f"[Reference Pattern — {feature_domain}]\n{text}\n"
+            else:
+                block = f"Source: {source}\n{text}\n"
+
             if current + len(block) > max_chars:
                 break
             lines.append(block)

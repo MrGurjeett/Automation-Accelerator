@@ -8,8 +8,13 @@ import os
 import yaml
 from dotenv import load_dotenv
 
+from ai.security import SecretStr, install_log_redaction
+
 
 load_dotenv(dotenv_path=Path(".env"), override=False)
+
+# Install log redaction on the root logger so secrets never appear in logs
+install_log_redaction()
 
 
 @dataclass(frozen=True)
@@ -21,6 +26,22 @@ class AzureOpenAISettings:
     chat_deployment: str
     embedding_deployment: str
     api_version: str = "2024-10-21"
+
+    # ── Security: never leak credentials via repr / print / logging ──
+    def __repr__(self) -> str:
+        return (
+            f"AzureOpenAISettings("
+            f"endpoint='{self.endpoint}', "
+            f"api_key='********', "
+            f"embedding_endpoint='{self.embedding_endpoint}', "
+            f"embedding_api_key='********', "
+            f"chat_deployment='{self.chat_deployment}', "
+            f"embedding_deployment='{self.embedding_deployment}', "
+            f"api_version='{self.api_version}')"
+        )
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
     @classmethod
     def from_sources(cls, config_path: str | Path = "config/config.yaml") -> "AzureOpenAISettings":

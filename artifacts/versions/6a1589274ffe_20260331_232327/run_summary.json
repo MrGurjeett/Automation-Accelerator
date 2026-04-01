@@ -1,0 +1,40 @@
+{
+  "completed_at": "2026-03-31T23:26:29",
+  "mode": "pipeline",
+  "regenerated": true,
+  "excel": "input/test_cases.xlsx",
+  "feature": "generated/features/login.feature",
+  "version_folder": "artifacts/versions/6a1589274ffe_20260331_232327",
+  "tests": {
+    "exit_code": 1,
+    "passed": 1,
+    "failed": 2,
+    "errors": 0,
+    "total": 3
+  },
+  "stats": {
+    "dom_elements": 0,
+    "pages_scanned": 0,
+    "raw_steps_converted": 0,
+    "normalized_steps": 0,
+    "rag_resolutions": 16,
+    "locator_healing": 0,
+    "aoai_chat_calls": 0,
+    "aoai_embedding_calls": 7,
+    "aoai_cache_hits": 2,
+    "tokens_prompt": 20,
+    "tokens_completion": 0,
+    "tokens_total": 20,
+    "tokens_saved_total": 4
+  },
+  "cumulative": {
+    "runs": 7,
+    "tokens_total": 20810,
+    "tokens_saved_total": 6629,
+    "aoai_chat_calls": 33,
+    "aoai_embedding_calls": 147,
+    "aoai_cache_hits": 52,
+    "rag_resolutions": 186,
+    "locator_healing": 0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "updated_at": "2026-03-31T23:55:47",
+  "cumulative": {
+    "runs": 10,
+    "tokens_total": 20969,
+    "tokens_saved_total": 6635,
+    "aoai_chat_calls": 33,
+    "aoai_embedding_calls": 201,
+    "aoai_cache_hits": 58,
+    "rag_resolutions": 300,
+    "locator_healing": 0
+  }
+}

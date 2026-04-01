@@ -5,16 +5,16 @@ environment: "qa"
 
 environments:
   dev:
-    base_url: "https://dev.example.com"
+    base_url: "https://parabank.parasoft.com/parabank/index.htm"
     api_url: "https://api.dev.example.com"
   qa:
-    base_url: "https://qa.example.com"
+    base_url: "https://parabank.parasoft.com/parabank/index.htm"
     api_url: "https://api.qa.example.com"
   staging:
-    base_url: "https://staging.example.com"
+    base_url: "https://parabank.parasoft.com/parabank/index.htm"
     api_url: "https://api.staging.example.com"
   prod:
-    base_url: "https://www.example.com"
+    base_url: "https://parabank.parasoft.com/parabank/index.htm"
     api_url: "https://api.example.com"
 
 # Browser Configuration
@@ -37,18 +37,18 @@ test:
 
 # Database Configuration
 database:
-  host: "localhost"
+  host: "${DB_HOST}"
   port: 5432
-  name: "test_db"
-  user: "test_user"
-  password: "test_password"
+  name: "${DB_NAME}"
+  user: "${DB_USER}"
+  password: "${DB_PASSWORD}"
 
 # Email Configuration
 email:
-  smtp_server: "smtp.gmail.com"
+  smtp_server: "${EMAIL_SMTP_SERVER}"
   smtp_port: 587
-  sender_email: "test@example.com"
-  sender_password: "password"
+  sender_email: "${EMAIL_SENDER}"
+  sender_password: "${EMAIL_SENDER_PASSWORD}"
 
 # Reporting Configuration
 reporting:

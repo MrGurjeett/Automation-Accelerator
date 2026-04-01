@@ -2,12 +2,17 @@
 API Test Module
 Tests for API endpoints
 """
+from __future__ import annotations
+
 import pytest
 from api.user_api import UserAPI
 from utils.config_loader import get_config
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+pytestmark = pytest.mark.api
 
 
 @pytest.fixture

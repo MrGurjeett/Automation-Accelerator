@@ -1,0 +1,25 @@
+Feature: Login
+
+  Scenario Outline: Login — Flow 1
+    Given I navigate to "Login Page"
+    When I fill "Username" with "<Username>"
+    When I fill "Password" with "<Password>"
+    And I click "Login Button"
+    Then I verify "Success Message" shows "<Success_Message_expected>"
+
+    Examples:
+      | TC_ID | Username | Password | Success_Message_expected |
+      | TC01 | standard_user | secret_sauce | Products |
+
+  Scenario Outline: Login — Flow 2
+    Given I navigate to "Login Page"
+    When I fill "Username" with "<Username>"
+    When I fill "Password" with "<Password>"
+    And I click "Login Button"
+    Then I verify "Error Message" shows "<Error_Message_expected>"
+
+    Examples:
+      | TC_ID | Username | Password | Error_Message_expected |
+      | TC02 | standard_user | WrongPass | Epic sadface: Username and password do not match any user in this service |
+      | TC03 | wronguser | secret_sauce | Epic sadface: Username and password do not match any user in this service |
+      | TC04 | [EMPTY] | [EMPTY] | Epic sadface: Username is required |

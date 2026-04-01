@@ -68,9 +68,12 @@ env/
 *.log
 logs/
 
-# Environment variables
+# Environment variables — NEVER commit secrets
 .env
 .env.local
+.env.*.local
+.env.production
+.env.staging
 
 # Database
 *.db

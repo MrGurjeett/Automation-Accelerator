@@ -1,0 +1,59 @@
+# Pre-commit hooks — install with: pre-commit install
+# See https://pre-commit.com for details.
+
+repos:
+  # ── Secret scanning — prevent accidental credential commits ────────────
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.4.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: ".env.example"
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.1
+    hooks:
+      - id: gitleaks
+
+  # ── General code quality ───────────────────────────────────────────────
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=500"]
+      - id: no-commit-to-branch
+        args: ["--branch", "main", "--branch", "master"]
+
+  # ── Python linting ─────────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.3.4
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  # ── Dependency vulnerability scanning (Issue 1.4) ─────────────────────
+  - repo: local
+    hooks:
+      - id: pip-audit
+        name: pip-audit (dependency vulnerabilities)
+        entry: pip-audit --strict --progress-spinner=off
+        language: python
+        pass_filenames: false
+        additional_dependencies: ["pip-audit>=2.7.0"]
+        stages: [pre-push]
+
+      - id: check-requirements-pinned
+        name: check requirements are upper-bounded
+        entry: python -c "
+          import pathlib, re, sys;
+          txt = pathlib.Path('requirements.txt').read_text();
+          lines = [l.strip() for l in txt.splitlines() if l.strip() and not l.strip().startswith('#')];
+          loose = [l for l in lines if not re.search(r'[<>=!]=', l)];
+          sys.exit('Unpinned deps found:\n' + '\n'.join(loose)) if loose else None
+          "
+        language: python
+        pass_filenames: false

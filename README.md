@@ -59,6 +59,56 @@ Edit `config/config.yaml` to configure:
 pytest
 ```
 
+By default, `pytest` runs the local/unit-style suite (security, validators, loaders, etc.) and skips tests that require a live UI/API/E2E environment.
+
+### Run UI tests (requires a reachable UI base URL)
+```bash
+pytest --run-ui
+```
+
+Optional environment variables:
+- `BASE_URL` (overrides config)
+- `UI_USERNAME`, `UI_PASSWORD`
+
+### Run API tests (requires a reachable API base URL)
+```bash
+pytest --run-api
+```
+
+Optional environment variable:
+- `API_URL`
+
+### Run generated E2E flows
+```bash
+pytest --run-e2e
+```
+
+If `pytest` is not on your PATH (exit code 127), use:
+
+```bash
+python -m pytest --run-e2e
+```
+
+## Running the full pipeline (Excel → AI → Feature → E2E)
+
+See [docs/pipeline_guidebook.md](docs/pipeline_guidebook.md).
+
+Browser UI (runs pipeline ops + shows live status):
+
+From the repo root:
+
+```bash
+.venv/bin/python -m ui.web_server
+```
+
+Open: `http://127.0.0.1:8123`
+
+Interactive terminal UI (runs pipeline ops + shows live status):
+
+```bash
+.venv/bin/python -m ui.tui
+```
+
 ### Run specific test file:
 ```bash
 pytest tests/test_login.py

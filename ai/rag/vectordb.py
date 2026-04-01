@@ -118,10 +118,11 @@ class PersistentInMemoryVectorStore(InMemoryVectorStore):
 class QdrantVectorStore:
 	"""Persistent Qdrant local vector store (Python 3.14 compatible)."""
 
-	def __init__(self, persist_path: str = ".qdrant", collection_name: str = "automation_kb") -> None:
+	def __init__(self, persist_path: str = ".qdrant", collection_name: str = "automation_kb", client=None) -> None:
 		from qdrant_client import QdrantClient
 
-		self.client = QdrantClient(path=persist_path)
+		self.client = client if client is not None else QdrantClient(path=persist_path)
+		self._owns_client = client is None
 		self.collection_name = collection_name
 		self._collection_ready = False
 
@@ -216,10 +217,24 @@ class QdrantVectorStore:
 		return pairs
 
 	def close(self) -> None:
+		if self._owns_client:
+			try:
+				self.client.close()
+			except Exception:
+				pass
+
+	def clear_collection(self) -> None:
+		"""Delete the entire collection and reset readiness.
+
+		Used when we want a full refresh (e.g. force DOM re-scan) instead of
+		upserting into an existing collection.
+		"""
 		try:
-			self.client.close()
+			self.client.delete_collection(collection_name=self.collection_name)
 		except Exception:
+			# Collection may not exist yet.
 			pass
+		self._collection_ready = False
 
 	def __del__(self) -> None:
 		self.close()
