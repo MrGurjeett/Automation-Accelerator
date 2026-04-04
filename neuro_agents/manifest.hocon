@@ -1,0 +1,15 @@
+{
+  // Neuro-SAN manifest schema: top-level mapping of registry .hocon files
+  // to either `true` or an object containing keys like `serve`.
+  //
+  // Paths are resolved relative to this manifest file.
+  // Since this file lives in neuro_agents/, the registries are under registries/.
+
+  // Use plain file keys so the agent names resolve as:
+  //   excel_parser_agent, dom_extractor_agent, execution_agent, pipeline_agent
+  // (Neuro-SAN uses the key minus `.hocon` as the agent name.)
+  "excel_parser_agent.hocon": true,
+  "dom_extractor_agent.hocon": true,
+  "execution_agent.hocon": true,
+  "pipeline_agent.hocon": true
+}

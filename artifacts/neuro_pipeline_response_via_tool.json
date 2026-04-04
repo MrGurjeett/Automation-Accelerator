@@ -1,0 +1,1314 @@
+{
+  "ok": true,
+  "excel": {
+    "excel_path": "C:\\Users\\2252990\\OneDrive - Cognizant\\2026\\Automation\\ui_upload.xlsx",
+    "rows": [
+      {
+        "TC_ID": "TC01",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "verify_text",
+        "Target": "Accounts Overview Title",
+        "Value": "",
+        "Expected": "Accounts Overview"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "navigate",
+        "Target": "Transfer Funds",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "100",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "select",
+        "Target": "Fromaccountid",
+        "Value": "first",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "select",
+        "Target": "Toaccountid",
+        "Value": "second",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "click",
+        "Target": "Transfer",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "verify_text",
+        "Target": "Transfer",
+        "Value": "",
+        "Expected": "Transfer Complete"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "navigate",
+        "Target": "Bill Pay",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.name",
+        "Value": "John",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.street",
+        "Value": "123 Main St",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.city",
+        "Value": "New York",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.state",
+        "Value": "NY",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.zipCode",
+        "Value": "10001",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.phoneNumber",
+        "Value": "1234567890",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.accountNumber",
+        "Value": "13344",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "verifyAccount",
+        "Value": "13344",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "50",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "click",
+        "Target": "Send Payment",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "verify_text",
+        "Target": "Bill Payment Complete",
+        "Value": "",
+        "Expected": "was successful"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "navigate",
+        "Target": "Request Loan",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "100",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "fill",
+        "Target": "Downpayment",
+        "Value": "10",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "click",
+        "Target": "Apply Now",
+        "Value": "",
+        "Expected": "-"
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "verify_text",
+        "Target": "Loan request processed",
+        "Value": "",
+        "Expected": "Loan request processed"
+      }
+    ],
+    "row_count": 40
+  },
+  "dom": {
+    "ok": true,
+    "step_count": 40,
+    "steps": [
+      {
+        "TC_ID": "TC01",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Page",
+          "matched_element": "Home",
+          "page": "Login Page",
+          "tag": "a",
+          "score": 0.5159,
+          "selector": "text=Home",
+          "locator_candidates": [
+            "text=Home"
+          ],
+          "attributes": {
+            "visible_text": "Home",
+            "href": "index.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Username",
+          "matched_element": "Username",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3465,
+          "selector": "[name='username']",
+          "locator_candidates": [
+            "input[name='username']",
+            "[name='username']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "username",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Password",
+          "matched_element": "Password",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3771,
+          "selector": "[name='password']",
+          "locator_candidates": [
+            "input[name='password']",
+            "[name='password']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "password",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Button",
+          "matched_element": "Login Button",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.5365,
+          "selector": "text=Log In",
+          "locator_candidates": [
+            "input[value='Log In']",
+            "[type='submit']"
+          ],
+          "attributes": {
+            "visible_text": "Log In",
+            "value": "Log In",
+            "class": "button"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC01",
+        "Page": "Login Page",
+        "Action": "verify_text",
+        "Target": "Accounts Overview Title",
+        "Value": "",
+        "Expected": "Accounts Overview",
+        "dom": {
+          "original_query": "Accounts Overview Title",
+          "matched_element": "Accounts Overview",
+          "page": "Login Page",
+          "tag": "a",
+          "score": 0.5271,
+          "selector": "text=Accounts Overview",
+          "locator_candidates": [
+            "text=Accounts Overview"
+          ],
+          "attributes": {
+            "visible_text": "Accounts Overview",
+            "href": "overview.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Page",
+          "matched_element": "Home",
+          "page": "Login Page",
+          "tag": "a",
+          "score": 0.5159,
+          "selector": "text=Home",
+          "locator_candidates": [
+            "text=Home"
+          ],
+          "attributes": {
+            "visible_text": "Home",
+            "href": "index.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Username",
+          "matched_element": "Username",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3465,
+          "selector": "[name='username']",
+          "locator_candidates": [
+            "input[name='username']",
+            "[name='username']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "username",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Password",
+          "matched_element": "Password",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3771,
+          "selector": "[name='password']",
+          "locator_candidates": [
+            "input[name='password']",
+            "[name='password']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "password",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Button",
+          "matched_element": "Login Button",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.5365,
+          "selector": "text=Log In",
+          "locator_candidates": [
+            "input[value='Log In']",
+            "[type='submit']"
+          ],
+          "attributes": {
+            "visible_text": "Log In",
+            "value": "Log In",
+            "class": "button"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "navigate",
+        "Target": "Transfer Funds",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Transfer Funds",
+          "matched_element": "Transfer Funds",
+          "page": "Transfer Funds",
+          "tag": "a",
+          "score": 0.5798,
+          "selector": "text=Transfer Funds",
+          "locator_candidates": [
+            "text=Transfer Funds"
+          ],
+          "attributes": {
+            "visible_text": "Transfer Funds",
+            "href": "transfer.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "100",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Amount",
+          "matched_element": "Amount",
+          "page": "Transfer Funds",
+          "tag": "input",
+          "score": 0.3271,
+          "selector": "#amount",
+          "locator_candidates": [
+            "#amount",
+            "[name='input']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "id": "amount",
+            "name": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "select",
+        "Target": "Fromaccountid",
+        "Value": "first",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Fromaccountid",
+          "matched_element": "Fromaccountid",
+          "page": "Transfer Funds",
+          "tag": "select",
+          "score": 0.565,
+          "selector": "#fromAccountId",
+          "locator_candidates": [
+            "#fromAccountId"
+          ],
+          "attributes": {
+            "visible_text": "12345\n12456\n12567\n12678\n12789\n12900\n13011\n13122\n13233\n13344\n54321",
+            "id": "fromAccountId",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "select",
+        "Target": "Toaccountid",
+        "Value": "second",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Toaccountid",
+          "matched_element": "Toaccountid",
+          "page": "Transfer Funds",
+          "tag": "select",
+          "score": 0.5558,
+          "selector": "#toAccountId",
+          "locator_candidates": [
+            "#toAccountId"
+          ],
+          "attributes": {
+            "visible_text": "12345\n12456\n12567\n12678\n12789\n12900\n13011\n13122\n13233\n13344\n54321",
+            "id": "toAccountId",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "click",
+        "Target": "Transfer",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Transfer",
+          "matched_element": "Transfer",
+          "page": "Transfer Funds",
+          "tag": "input",
+          "score": 0.396,
+          "selector": "text=Transfer",
+          "locator_candidates": [
+            "input[value='Transfer']",
+            "text=Transfer"
+          ],
+          "attributes": {
+            "visible_text": "Transfer",
+            "class": "button",
+            "value": "Transfer"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC02",
+        "Page": "Transfer Funds",
+        "Action": "verify_text",
+        "Target": "Transfer",
+        "Value": "",
+        "Expected": "Transfer Complete",
+        "dom": {
+          "original_query": "Transfer",
+          "matched_element": "Transfer",
+          "page": "Transfer Funds",
+          "tag": "input",
+          "score": 0.396,
+          "selector": "text=Transfer",
+          "locator_candidates": [
+            "input[value='Transfer']",
+            "text=Transfer"
+          ],
+          "attributes": {
+            "visible_text": "Transfer",
+            "class": "button",
+            "value": "Transfer"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Page",
+          "matched_element": "Home",
+          "page": "Login Page",
+          "tag": "a",
+          "score": 0.5159,
+          "selector": "text=Home",
+          "locator_candidates": [
+            "text=Home"
+          ],
+          "attributes": {
+            "visible_text": "Home",
+            "href": "index.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Username",
+          "matched_element": "Username",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3465,
+          "selector": "[name='username']",
+          "locator_candidates": [
+            "input[name='username']",
+            "[name='username']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "username",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Password",
+          "matched_element": "Password",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3771,
+          "selector": "[name='password']",
+          "locator_candidates": [
+            "input[name='password']",
+            "[name='password']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "password",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Button",
+          "matched_element": "Login Button",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.5365,
+          "selector": "text=Log In",
+          "locator_candidates": [
+            "input[value='Log In']",
+            "[type='submit']"
+          ],
+          "attributes": {
+            "visible_text": "Log In",
+            "value": "Log In",
+            "class": "button"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "navigate",
+        "Target": "Bill Pay",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Bill Pay",
+          "matched_element": "Bill Pay",
+          "page": "Bill Pay",
+          "tag": "a",
+          "score": 0.5591,
+          "selector": "text=Bill Pay",
+          "locator_candidates": [
+            "text=Bill Pay"
+          ],
+          "attributes": {
+            "visible_text": "Bill Pay",
+            "href": "billpay.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.name",
+        "Value": "John",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.name",
+          "matched_element": "Payee.name",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.563,
+          "selector": "[name='payee.name']",
+          "locator_candidates": [
+            "[name='payee.name']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.name",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.street",
+        "Value": "123 Main St",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.address.street",
+          "matched_element": "Payee.address.street",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5816,
+          "selector": "[name='payee.address.street']",
+          "locator_candidates": [
+            "[name='payee.address.street']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.address.street",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.city",
+        "Value": "New York",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.address.city",
+          "matched_element": "Payee.address.city",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5934,
+          "selector": "[name='payee.address.city']",
+          "locator_candidates": [
+            "[name='payee.address.city']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.address.city",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.state",
+        "Value": "NY",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.address.state",
+          "matched_element": "Payee.address.state",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5958,
+          "selector": "[name='payee.address.state']",
+          "locator_candidates": [
+            "[name='payee.address.state']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.address.state",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.address.zipCode",
+        "Value": "10001",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.address.zipCode",
+          "matched_element": "Payee.address.zipcode",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.6047,
+          "selector": "[name='payee.address.zipCode']",
+          "locator_candidates": [
+            "[name='payee.address.zipCode']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.address.zipCode",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.phoneNumber",
+        "Value": "1234567890",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.phoneNumber",
+          "matched_element": "1261210a F1f2 43b2 9caa 1da74d4755c9",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5408,
+          "selector": "#1261210a-f1f2-43b2-9caa-1da74d4755c9",
+          "locator_candidates": [
+            "#1261210a-f1f2-43b2-9caa-1da74d4755c9",
+            "[name='payee.phoneNumber']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "id": "1261210a-f1f2-43b2-9caa-1da74d4755c9",
+            "name": "payee.phoneNumber",
+            "class": "input phone-number-1261210a-f1f2-43b2-9caa-1da74d4755c9"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Payee.accountNumber",
+        "Value": "13344",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Payee.accountNumber",
+          "matched_element": "Payee.accountnumber",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5851,
+          "selector": "[name='payee.accountNumber']",
+          "locator_candidates": [
+            "[name='payee.accountNumber']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "payee.accountNumber",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "verifyAccount",
+        "Value": "13344",
+        "Expected": "-",
+        "dom": {
+          "original_query": "verifyAccount",
+          "matched_element": "Verifyaccount",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.4781,
+          "selector": "[name='verifyAccount']",
+          "locator_candidates": [
+            "[name='verifyAccount']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "verifyAccount",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "50",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Amount",
+          "matched_element": "Amount",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.2977,
+          "selector": "[name='amount']",
+          "locator_candidates": [
+            "[name='amount']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "amount",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "click",
+        "Target": "Send Payment",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Send Payment",
+          "matched_element": "Send Payment",
+          "page": "Bill Pay",
+          "tag": "input",
+          "score": 0.5066,
+          "selector": "text=Send Payment",
+          "locator_candidates": [
+            "input[value='Send Payment']",
+            "text=Send Payment"
+          ],
+          "attributes": {
+            "visible_text": "Send Payment",
+            "class": "button",
+            "value": "Send Payment"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC03",
+        "Page": "Bill Pay",
+        "Action": "verify_text",
+        "Target": "Bill Payment Complete",
+        "Value": "",
+        "Expected": "was successful",
+        "dom": {
+          "original_query": "Bill Payment Complete",
+          "matched_element": "Bill Pay",
+          "page": "Bill Pay",
+          "tag": "a",
+          "score": 0.4477,
+          "selector": "text=Bill Pay",
+          "locator_candidates": [
+            "text=Bill Pay"
+          ],
+          "attributes": {
+            "visible_text": "Bill Pay",
+            "href": "billpay.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login",
+        "Action": "navigate",
+        "Target": "Login Page",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Page",
+          "matched_element": "Home",
+          "page": "Login Page",
+          "tag": "a",
+          "score": 0.5159,
+          "selector": "text=Home",
+          "locator_candidates": [
+            "text=Home"
+          ],
+          "attributes": {
+            "visible_text": "Home",
+            "href": "index.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Username",
+        "Value": "john",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Username",
+          "matched_element": "Username",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3465,
+          "selector": "[name='username']",
+          "locator_candidates": [
+            "input[name='username']",
+            "[name='username']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "username",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "fill",
+        "Target": "Password",
+        "Value": "demo",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Password",
+          "matched_element": "Password",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.3771,
+          "selector": "[name='password']",
+          "locator_candidates": [
+            "input[name='password']",
+            "[name='password']"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "name": "password",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Login Page",
+        "Action": "click",
+        "Target": "Login Button",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Login Button",
+          "matched_element": "Login Button",
+          "page": "Login Page",
+          "tag": "input",
+          "score": 0.5365,
+          "selector": "text=Log In",
+          "locator_candidates": [
+            "input[value='Log In']",
+            "[type='submit']"
+          ],
+          "attributes": {
+            "visible_text": "Log In",
+            "value": "Log In",
+            "class": "button"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "navigate",
+        "Target": "Request Loan",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Request Loan",
+          "matched_element": "Request Loan",
+          "page": "Request Loan",
+          "tag": "a",
+          "score": 0.5538,
+          "selector": "text=Request Loan",
+          "locator_candidates": [
+            "text=Request Loan"
+          ],
+          "attributes": {
+            "visible_text": "Request Loan",
+            "href": "requestloan.htm"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "fill",
+        "Target": "Amount",
+        "Value": "100",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Amount",
+          "matched_element": "Amount",
+          "page": "Request Loan",
+          "tag": "input",
+          "score": 0.335,
+          "selector": "#amount",
+          "locator_candidates": [
+            "#amount"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "id": "amount",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "fill",
+        "Target": "Downpayment",
+        "Value": "10",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Downpayment",
+          "matched_element": "Downpayment",
+          "page": "Request Loan",
+          "tag": "input",
+          "score": 0.5284,
+          "selector": "#downPayment",
+          "locator_candidates": [
+            "#downPayment"
+          ],
+          "attributes": {
+            "visible_text": "",
+            "id": "downPayment",
+            "class": "input"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "click",
+        "Target": "Apply Now",
+        "Value": "",
+        "Expected": "-",
+        "dom": {
+          "original_query": "Apply Now",
+          "matched_element": "Apply Now",
+          "page": "Request Loan",
+          "tag": "input",
+          "score": 0.4977,
+          "selector": "text=Apply Now",
+          "locator_candidates": [
+            "input[value='Apply Now']",
+            "text=Apply Now"
+          ],
+          "attributes": {
+            "visible_text": "Apply Now",
+            "class": "button",
+            "value": "Apply Now"
+          }
+        }
+      },
+      {
+        "TC_ID": "TC04",
+        "Page": "Request Loan",
+        "Action": "verify_text",
+        "Target": "Loan request processed",
+        "Value": "",
+        "Expected": "Loan request processed",
+        "dom": {
+          "original_query": "Loan request processed",
+          "matched_element": "Request Loan",
+          "page": "Request Loan",
+          "tag": "a",
+          "score": 0.4675,
+          "selector": "text=Request Loan",
+          "locator_candidates": [
+            "text=Request Loan"
+          ],
+          "attributes": {
+            "visible_text": "Request Loan",
+            "href": "requestloan.htm"
+          }
+        }
+      }
+    ],
+    "unresolved": [],
+    "unresolved_count": 0
+  },
+  "execution": {
+    "exit_code": 0,
+    "passed": 0,
+    "failed": 0,
+    "errors": 0,
+    "total": 0,
+    "success": true
+  }
+}

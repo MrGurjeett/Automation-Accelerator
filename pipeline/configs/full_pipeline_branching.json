@@ -1,0 +1,104 @@
+{
+  "name": "full-pipeline-branching",
+  "version": "2",
+  "description": "Full pipeline with Phase 3.5 branching: validation failures route to error handler, structured conditions",
+  "defaults": {
+    "feature_name": "Login"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "init_dom",
+      "label": "DOM Extraction",
+      "inputs": {
+        "force_scan": "$input.force_scan"
+      }
+    },
+    {
+      "name": "register_pages",
+      "label": "Register Pages"
+    },
+    {
+      "name": "convert_raw",
+      "label": "Convert Raw Steps",
+      "inputs": {
+        "raw_path": "$steps.detect_excel.data.raw_path",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      },
+      "condition": {"exists": "$steps.detect_excel.data.raw_path"},
+      "on_failure": "continue"
+    },
+    {
+      "name": "version_check",
+      "label": "Version Check",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "force": "$input.force"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows"
+      },
+      "on_failure_step": "validation_error_handler"
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$steps.validate.data.validated"
+      }
+    },
+    {
+      "name": "generate",
+      "label": "Feature Generation",
+      "inputs": {
+        "accepted": "$steps.normalize.data.accepted",
+        "feature_name": "$input.feature_name",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "execute",
+      "label": "Test Execution",
+      "condition": {"not": {"truthy": "$input.generate_only"}}
+    },
+    {
+      "name": "persist",
+      "label": "Save Results",
+      "inputs": {
+        "mode": "pipeline",
+        "regenerated": true,
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "feature_path": "$steps.generate.data.feature_path",
+        "version_folder": "$steps.generate.data.version_folder",
+        "tests": "$steps.execute.data"
+      }
+    },
+    {
+      "name": "validation_error_handler",
+      "label": "Validation Error Handler",
+      "condition": {"exists": "$steps.validate.error"},
+      "inputs": {
+        "error": "$steps.validate.error",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      },
+      "on_failure": "continue"
+    }
+  ]
+}

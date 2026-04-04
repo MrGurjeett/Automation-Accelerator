@@ -53,13 +53,33 @@ def _persist() -> None:
     if path is None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
+    # Use a unique temp file per writer to avoid cross-process collisions.
+    tmp = path.with_name(f"{path.name}.{os.getpid()}.{time.time_ns()}.tmp")
     payload = {
         "updated_at": int(time.time()),
         "stats": dict(ai_stats),
     }
     tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    os.replace(tmp, path)
+
+    # On Windows, os.replace may fail transiently if another process keeps
+    # the target file handle open. Retry briefly before giving up.
+    last_error: Exception | None = None
+    for attempt in range(10):
+        try:
+            os.replace(tmp, path)
+            return
+        except PermissionError as exc:
+            last_error = exc
+            time.sleep(0.05 * (attempt + 1))
+
+    # Best-effort cleanup of temp file before surfacing the original error.
+    try:
+        tmp.unlink(missing_ok=True)
+    except Exception:
+        pass
+
+    if last_error:
+        raise last_error
 
 
 def snapshot() -> dict[str, int]:

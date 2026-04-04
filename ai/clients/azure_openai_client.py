@@ -72,11 +72,14 @@ class AzureOpenAIClient:
         deployment: str | None = None,
     ) -> str:
         model_name = deployment or self.settings.chat_deployment
+        # gpt-5.x / o1 / o3 models require max_completion_tokens instead of max_tokens
+        _use_new_param = model_name and any(t in model_name for t in ("gpt-5", "o1", "o3"))
+        token_key = "max_completion_tokens" if _use_new_param else "max_tokens"
         payload = {
             "model": model_name,
             "messages": messages,
             "temperature": temperature,
-            "max_tokens": max_tokens,
+            token_key: max_tokens,
         }
         cache_key = self._cache_key(payload)
         cached = self._chat_cache.get(cache_key)

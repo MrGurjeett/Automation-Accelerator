@@ -1,0 +1,103 @@
+{
+  "name": "mcp-decision-pipeline",
+  "version": "3",
+  "description": "Pipeline with MCP-assisted decision making: smart branching, retry intelligence, condition enhancement",
+  "use_mcp_decision": true,
+  "use_mcp_retry": true,
+  "use_mcp_condition": false,
+  "defaults": {
+    "feature_name": "Login"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "init_dom",
+      "label": "DOM Extraction",
+      "inputs": {
+        "force_scan": "$input.force_scan"
+      }
+    },
+    {
+      "name": "register_pages",
+      "label": "Register Pages"
+    },
+    {
+      "name": "version_check",
+      "label": "Version Check",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "force": "$input.force"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows",
+        "use_mcp_validation": true
+      },
+      "on_failure_step": "recover_validation",
+      "on_success_step": "normalize"
+    },
+    {
+      "name": "recover_validation",
+      "label": "Recovery: Validation",
+      "agent": "mcp_recovery",
+      "inputs": {
+        "error": "$steps.validate.error",
+        "failed_step": "validate",
+        "context": "$steps.validate.data",
+        "recovery_strategy": "auto"
+      },
+      "condition": {"exists": "$steps.validate.error"},
+      "on_failure": "continue",
+      "on_success_step": "normalize"
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$steps.validate.data.validated"
+      }
+    },
+    {
+      "name": "generate",
+      "label": "Feature Generation",
+      "inputs": {
+        "accepted": "$steps.normalize.data.accepted",
+        "feature_name": "$input.feature_name",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "execute",
+      "label": "Test Execution",
+      "condition": {"not": {"truthy": "$input.generate_only"}}
+    },
+    {
+      "name": "persist",
+      "label": "Save Results",
+      "inputs": {
+        "mode": "pipeline",
+        "regenerated": true,
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "feature_path": "$steps.generate.data.feature_path",
+        "version_folder": "$steps.generate.data.version_folder",
+        "tests": "$steps.execute.data"
+      }
+    }
+  ]
+}

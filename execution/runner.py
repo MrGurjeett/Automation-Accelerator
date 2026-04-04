@@ -7,10 +7,12 @@ Returns structured result with pass/fail counts.
 from __future__ import annotations
 
 import logging
+import os
 import re
 import subprocess
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 import ai.ai_stats as ai_stats
 
@@ -62,6 +64,13 @@ def run_tests() -> TestResult:
 
     logger.info("Command: %s", " ".join(cmd))
 
+    # Ensure AA_ROOT is correct for the subprocess.  The .env file may
+    # contain a stale value; we always override with the *actual* project
+    # root (the directory containing main.py, i.e. our working directory).
+    env = os.environ.copy()
+    project_root = Path(__file__).resolve().parent.parent
+    env["AA_ROOT"] = str(project_root)
+
     # Run pytest ONCE: stream output in real time AND capture for parsing.
     # (Previously we ran twice: once for streaming, once for parsing.)
     proc = subprocess.Popen(
@@ -70,6 +79,8 @@ def run_tests() -> TestResult:
         stderr=subprocess.STDOUT,
         text=True,
         bufsize=1,
+        env=env,
+        cwd=str(project_root),
     )
 
     captured: list[str] = []

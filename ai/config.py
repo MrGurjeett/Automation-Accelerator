@@ -11,7 +11,25 @@ from dotenv import load_dotenv
 from ai.security import SecretStr, install_log_redaction
 
 
-load_dotenv(dotenv_path=Path(".env"), override=False)
+# Load `.env` from the project root (next to `main.py`) rather than relying on
+# the current working directory. This prevents subtle config differences when
+# running via the UI server, test runners, or other subprocess contexts.
+from project_root import get_project_root
+_PROJECT_ROOT = get_project_root()
+_DOTENV_PATH = _PROJECT_ROOT / ".env"
+
+def _truthy_env(name: str) -> bool:
+    value = (os.environ.get(name) or "").strip().lower()
+    return value in {"1", "true", "yes", "y", "on"}
+
+
+# By default, we do NOT override explicitly-provided environment variables.
+# However, some launch contexts (notably UI subprocesses on Windows) can inherit
+# stale AZURE_OPENAI_* values. Setting DOTENV_OVERRIDE=1 forces `.env` to win.
+_DOTENV_OVERRIDE = _truthy_env("DOTENV_OVERRIDE")
+load_dotenv(dotenv_path=_DOTENV_PATH if _DOTENV_PATH.exists() else Path(".env"), override=_DOTENV_OVERRIDE)
+
+_DEFAULT_CONFIG_PATH = _PROJECT_ROOT / "config" / "config.yaml"
 
 # Install log redaction on the root logger so secrets never appear in logs
 install_log_redaction()
@@ -44,7 +62,7 @@ class AzureOpenAISettings:
         return self.__repr__()
 
     @classmethod
-    def from_sources(cls, config_path: str | Path = "config/config.yaml") -> "AzureOpenAISettings":
+    def from_sources(cls, config_path: str | Path = _DEFAULT_CONFIG_PATH) -> "AzureOpenAISettings":
         cfg = _read_yaml(config_path)
         ai_cfg = (cfg.get("ai") or {}).get("azure_openai") or {}
 
@@ -99,7 +117,7 @@ class RAGSettings:
     qdrant_collection_name: str = "automation_kb"
 
     @classmethod
-    def from_sources(cls, config_path: str | Path = "config/config.yaml") -> "RAGSettings":
+    def from_sources(cls, config_path: str | Path = _DEFAULT_CONFIG_PATH) -> "RAGSettings":
         cfg = _read_yaml(config_path)
         rag_cfg = (cfg.get("ai") or {}).get("rag") or {}
         return cls(
@@ -124,7 +142,7 @@ class AIConfig:
     rag: RAGSettings
 
     @classmethod
-    def load(cls, config_path: str | Path = "config/config.yaml") -> "AIConfig":
+    def load(cls, config_path: str | Path = _DEFAULT_CONFIG_PATH) -> "AIConfig":
         return cls(
             azure_openai=AzureOpenAISettings.from_sources(config_path),
             rag=RAGSettings.from_sources(config_path),

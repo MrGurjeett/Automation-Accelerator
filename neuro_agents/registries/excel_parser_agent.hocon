@@ -1,0 +1,44 @@
+{
+  "metadata": {
+    "description": "Convert Excel into structured steps",
+    "tags": ["automation", "excel"],
+    "sample_queries": [
+      "Parse the Excel file at C:/path/to/test.xlsx"
+    ]
+  },
+  "llm_config": {
+    "model_name": "azure-gpt-4.1",
+    "azure_endpoint": ${?AZURE_OPENAI_ENDPOINT},
+    "deployment_name": ${?AZURE_OPENAI_CHAT_DEPLOYMENT},
+    "openai_api_version": ${?AZURE_OPENAI_API_VERSION},
+    "openai_api_key": ${?AZURE_OPENAI_API_KEY},
+    "verbose": false
+  },
+  "tools": [
+    {
+      "name": "excel_parser_agent",
+      "function": {
+        "description": "Parses an Excel file containing test steps and returns structured rows."
+      },
+      "instructions": "Ask for an Excel file path if it is not provided. When you have a path, call read_excel_tool with file_path. After the tool returns, reply with the tool result as JSON.",
+      "tools": ["read_excel_tool"]
+    },
+    {
+      "name": "read_excel_tool",
+      "function": {
+        "description": "Read an Excel (.xlsx) file and return structured step rows.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "description": "Path to the Excel (.xlsx) file."
+            }
+          },
+          "required": ["file_path"]
+        }
+      },
+      "class": "neuro_agents.coded_tools.excel_tools.ReadExcelTool"
+    }
+  ]
+}

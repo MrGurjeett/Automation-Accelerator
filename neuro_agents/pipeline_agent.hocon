@@ -1,0 +1,44 @@
+{
+	"metadata": {
+		"description": "Orchestrate Excel -> DOM enrichment -> Execution",
+		"tags": ["automation", "pipeline"],
+		"sample_queries": [
+			"Run the pipeline for the Excel file at C:/path/to/test.xlsx"
+		]
+	},
+	"llm_config": {
+		"model_name": "azure-gpt-4.1",
+		"azure_endpoint": ${?AZURE_OPENAI_ENDPOINT},
+		"deployment_name": ${?AZURE_OPENAI_CHAT_DEPLOYMENT},
+		"openai_api_version": ${?AZURE_OPENAI_API_VERSION},
+		"openai_api_key": ${?AZURE_OPENAI_API_KEY},
+		"verbose": false
+	},
+	"tools": [
+		{
+			"name": "pipeline_agent",
+			"function": {
+				"description": "Runs the end-to-end automation pipeline given an Excel file path."
+			},
+			"instructions": "You help run the automation pipeline. Ask for an Excel file path if it is not provided. When you have a path, call run_pipeline_tool with excel_path. After the tool returns, reply with the tool result as JSON.",
+			"tools": ["run_pipeline_tool"]
+		},
+		{
+			"name": "run_pipeline_tool",
+			"function": {
+				"description": "Run the end-to-end automation pipeline from an Excel file.",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"excel_path": {
+							"type": "string",
+							"description": "Path to the Excel (.xlsx) file."
+						}
+					},
+					"required": ["excel_path"]
+				}
+			},
+			"class": "neuro_agents.coded_tools.pipeline_tools.RunPipelineTool"
+		}
+	]
+}

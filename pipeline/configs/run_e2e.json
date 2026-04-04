@@ -1,0 +1,21 @@
+{
+  "name": "run-e2e",
+  "version": "1",
+  "description": "Execute existing generated tests only",
+  "defaults": {},
+  "steps": [
+    {
+      "name": "execute",
+      "label": "Test Execution"
+    },
+    {
+      "name": "persist",
+      "label": "Save Results",
+      "inputs": {
+        "mode": "run-only",
+        "regenerated": false,
+        "tests": "$execute.data"
+      }
+    }
+  ]
+}

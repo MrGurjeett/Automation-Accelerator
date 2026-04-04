@@ -1,0 +1,69 @@
+{
+  "name": "generate-only",
+  "version": "1",
+  "description": "Generate feature files only, skip test execution",
+  "defaults": {
+    "feature_name": "Login"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "init_dom",
+      "label": "DOM Extraction",
+      "inputs": {
+        "force_scan": "$input.force_scan"
+      }
+    },
+    {
+      "name": "register_pages",
+      "label": "Register Pages"
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$read_excel.data.rows"
+      }
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$validate.data.validated"
+      }
+    },
+    {
+      "name": "generate",
+      "label": "Feature Generation",
+      "inputs": {
+        "accepted": "$normalize.data.accepted",
+        "feature_name": "$input.feature_name",
+        "excel_path": "$detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "persist",
+      "label": "Save Results",
+      "inputs": {
+        "mode": "generate-only",
+        "regenerated": true,
+        "excel_path": "$detect_excel.data.excel_path",
+        "feature_path": "$generate.data.feature_path",
+        "version_folder": "$generate.data.version_folder"
+      }
+    }
+  ]
+}

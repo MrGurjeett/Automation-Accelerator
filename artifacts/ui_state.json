@@ -1,0 +1,18 @@
+{
+  "running": false,
+  "mode": "pipeline",
+  "started_at": 1775235078.8170028,
+  "finished_at": 1775235083.8598363,
+  "command": [
+    "python",
+    "-u",
+    "main.py",
+    "--force",
+    "--scan"
+  ],
+  "exit_code": 1,
+  "pid": 33736,
+  "error": null,
+  "log_path": "C:\\Users\\2252990\\OneDrive - Cognizant\\2026\\Automation\\Automation-Accelerator\\artifacts\\ui_dashboard.log",
+  "stats_path": "C:\\Users\\2252990\\OneDrive - Cognizant\\2026\\Automation\\Automation-Accelerator\\artifacts\\latest_stats.json"
+}

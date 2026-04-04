@@ -21,7 +21,9 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from project_root import get_project_root
+
+_PROJECT_ROOT = get_project_root()
 _TESTDATA_DIR = _PROJECT_ROOT / "config" / "testdata"
 _ALLOWED_EXTENSIONS: frozenset[str] = frozenset({".yaml", ".yml", ".json"})
 

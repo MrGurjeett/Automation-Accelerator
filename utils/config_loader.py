@@ -22,7 +22,9 @@ logger = logging.getLogger(__name__)
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
-_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+from project_root import get_project_root
+
+_PROJECT_ROOT = get_project_root()
 _CONFIG_PATH = _PROJECT_ROOT / "config" / "config.yaml"
 _ENV_PATH = _PROJECT_ROOT / ".env"
 _ENV_VAR_RE = re.compile(r"\$\{(\w+)\}")

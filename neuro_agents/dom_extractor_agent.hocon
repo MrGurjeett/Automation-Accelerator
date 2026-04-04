@@ -1,0 +1,44 @@
+{
+	"metadata": {
+		"description": "Enrich steps with DOM-resolved locators",
+		"tags": ["automation", "dom", "rag"],
+		"sample_queries": [
+			"Enrich these steps with DOM locators"
+		]
+	},
+	"llm_config": {
+		"model_name": "azure-gpt-4.1",
+		"azure_endpoint": ${?AZURE_OPENAI_ENDPOINT},
+		"deployment_name": ${?AZURE_OPENAI_CHAT_DEPLOYMENT},
+		"openai_api_version": ${?AZURE_OPENAI_API_VERSION},
+		"openai_api_key": ${?AZURE_OPENAI_API_KEY},
+		"verbose": false
+	},
+	"tools": [
+		{
+			"name": "dom_extractor_agent",
+			"function": {
+				"description": "Enriches step rows with DOM/RAG locator information."
+			},
+			"instructions": "Call extract_dom_tool with step_data containing either {rows:[...]} or {steps:[...]} (or a single Excel row object). After the tool returns, reply with the tool result as JSON.",
+			"tools": ["extract_dom_tool"]
+		},
+		{
+			"name": "extract_dom_tool",
+			"function": {
+				"description": "Enrich step data with DOM/RAG locator info.",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"step_data": {
+							"type": "object",
+							"description": "Step data object, typically the output of read_excel_tool (e.g., {rows:[...]})."
+						}
+					},
+					"required": ["step_data"]
+				}
+			},
+			"class": "neuro_agents.coded_tools.dom_tools.ExtractDomTool"
+		}
+	]
+}

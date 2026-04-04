@@ -1,0 +1,44 @@
+{
+	"metadata": {
+		"description": "Run automation and return execution result",
+		"tags": ["automation", "execution"],
+		"sample_queries": [
+			"Run the automation suite now"
+		]
+	},
+	"llm_config": {
+		"model_name": "azure-gpt-4.1",
+		"azure_endpoint": ${?AZURE_OPENAI_ENDPOINT},
+		"deployment_name": ${?AZURE_OPENAI_CHAT_DEPLOYMENT},
+		"openai_api_version": ${?AZURE_OPENAI_API_VERSION},
+		"openai_api_key": ${?AZURE_OPENAI_API_KEY},
+		"verbose": false
+	},
+	"tools": [
+		{
+			"name": "execution_agent",
+			"function": {
+				"description": "Runs the automation execution runner and returns the result payload."
+			},
+			"instructions": "Call execute_steps_tool. If steps are provided, pass them as the steps array. After the tool returns, reply with the tool result as JSON.",
+			"tools": ["execute_steps_tool"]
+		},
+		{
+			"name": "execute_steps_tool",
+			"function": {
+				"description": "Execute the automation run and return the results.",
+				"parameters": {
+					"type": "object",
+					"properties": {
+						"steps": {
+							"type": "array",
+							"description": "Optional steps list for orchestration/observability.",
+							"items": {"type": "object"}
+						}
+					}
+				}
+			},
+			"class": "neuro_agents.coded_tools.execution_tools.ExecuteStepsTool"
+		}
+	]
+}

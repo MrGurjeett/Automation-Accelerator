@@ -1,0 +1,59 @@
+{
+  "name": "test-recovery",
+  "version": "3",
+  "description": "Test scenario: inject invalid input → validation fails → MCPRecoveryAgent triggered",
+  "use_mcp_decision": false,
+  "use_mcp_retry": false,
+  "use_mcp_condition": false,
+  "defaults": {
+    "feature_name": "TestRecovery"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows"
+      },
+      "on_failure_step": "recover_validation",
+      "on_success_step": "post_validate"
+    },
+    {
+      "name": "recover_validation",
+      "label": "Recovery: Validation",
+      "agent": "mcp_recovery",
+      "inputs": {
+        "error": "$steps.validate.error",
+        "failed_step": "validate",
+        "context": "$steps.validate.data",
+        "recovery_strategy": "auto"
+      },
+      "condition": {"exists": "$steps.validate.error"},
+      "on_failure": "continue",
+      "on_success_step": "post_validate"
+    },
+    {
+      "name": "post_validate",
+      "label": "Post-Validation Gate",
+      "agent": "noop",
+      "inputs": {
+        "source": "recovery_or_validation"
+      },
+      "on_failure": "continue"
+    }
+  ]
+}

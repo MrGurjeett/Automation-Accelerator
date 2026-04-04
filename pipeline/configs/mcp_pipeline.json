@@ -1,0 +1,129 @@
+{
+  "name": "mcp-pipeline",
+  "version": "2",
+  "description": "MCP-powered pipeline: ADO fetch, MCP generation, validation with recovery branching",
+  "defaults": {
+    "feature_name": "Login"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "init_dom",
+      "label": "DOM Extraction",
+      "inputs": {
+        "force_scan": "$input.force_scan"
+      }
+    },
+    {
+      "name": "register_pages",
+      "label": "Register Pages"
+    },
+    {
+      "name": "version_check",
+      "label": "Version Check",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "force": "$input.force"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "mcp_enrich",
+      "label": "MCP Enrichment",
+      "agent": "mcp_enrichment",
+      "inputs": {
+        "enrichment_type": "test_cases",
+        "data": "$steps.read_excel.data.rows"
+      },
+      "on_failure": "continue"
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows",
+        "use_mcp_validation": true
+      },
+      "on_failure_step": "recover_validation"
+    },
+    {
+      "name": "mcp_validate",
+      "label": "MCP Validation",
+      "agent": "mcp_validation",
+      "inputs": {
+        "validation_target": "test_cases",
+        "data": "$steps.validate.data.validated",
+        "rules": ["completeness", "semantic_correctness", "step_ordering"]
+      },
+      "on_failure": "continue"
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$steps.validate.data.validated"
+      }
+    },
+    {
+      "name": "mcp_generate",
+      "label": "MCP Generation",
+      "agent": "mcp_generation",
+      "inputs": {
+        "generation_type": "test_summary",
+        "input_data": "$steps.normalize.data.accepted"
+      },
+      "on_failure": "continue"
+    },
+    {
+      "name": "generate",
+      "label": "Feature Generation",
+      "inputs": {
+        "accepted": "$steps.normalize.data.accepted",
+        "feature_name": "$input.feature_name",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "execute",
+      "label": "Test Execution",
+      "condition": {"not": {"truthy": "$input.generate_only"}}
+    },
+    {
+      "name": "persist",
+      "label": "Save Results",
+      "inputs": {
+        "mode": "pipeline",
+        "regenerated": true,
+        "excel_path": "$steps.detect_excel.data.excel_path",
+        "feature_path": "$steps.generate.data.feature_path",
+        "version_folder": "$steps.generate.data.version_folder",
+        "tests": "$steps.execute.data"
+      }
+    },
+    {
+      "name": "recover_validation",
+      "label": "Recovery: Validation",
+      "agent": "mcp_recovery",
+      "inputs": {
+        "error": "$steps.validate.error",
+        "failed_step": "validate",
+        "context": "$steps.validate.data",
+        "recovery_strategy": "auto"
+      },
+      "condition": {"exists": "$steps.validate.error"},
+      "on_failure": "continue"
+    }
+  ]
+}

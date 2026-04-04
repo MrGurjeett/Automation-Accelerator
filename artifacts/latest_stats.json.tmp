@@ -1,0 +1,18 @@
+{
+  "updated_at": 1775039900,
+  "stats": {
+    "dom_elements": 0,
+    "pages_scanned": 0,
+    "raw_steps_converted": 0,
+    "normalized_steps": 0,
+    "rag_resolutions": 0,
+    "locator_healing": 0,
+    "aoai_chat_calls": 0,
+    "aoai_embedding_calls": 6,
+    "aoai_cache_hits": 0,
+    "tokens_prompt": 3888,
+    "tokens_completion": 0,
+    "tokens_total": 3888,
+    "tokens_saved_total": 0
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "name": "test-decision",
+  "version": "3",
+  "description": "Test scenario: multi-branch pipeline with MCP-assisted decision making",
+  "use_mcp_decision": true,
+  "use_mcp_retry": false,
+  "use_mcp_condition": false,
+  "defaults": {
+    "feature_name": "TestDecision"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows"
+      },
+      "on_success_step": "normalize",
+      "on_failure_step": "recover_validation"
+    },
+    {
+      "name": "enrich",
+      "label": "Data Enrichment",
+      "inputs": {
+        "data": "$steps.validate.data",
+        "enrichment_type": "context"
+      },
+      "on_failure": "continue",
+      "on_success_step": "normalize"
+    },
+    {
+      "name": "recover_validation",
+      "label": "Recovery: Validation",
+      "inputs": {
+        "error": "$steps.validate.error",
+        "failed_step": "validate",
+        "context": "$steps.validate.data",
+        "recovery_strategy": "auto"
+      },
+      "condition": {"exists": "$steps.validate.error"},
+      "on_failure": "continue",
+      "on_success_step": "normalize"
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$steps.validate.data.validated"
+      },
+      "on_failure": "continue"
+    },
+    {
+      "name": "generate",
+      "label": "Feature Generation",
+      "inputs": {
+        "accepted": "$steps.normalize.data.accepted",
+        "feature_name": "$input.feature_name",
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      },
+      "on_failure": "continue"
+    }
+  ]
+}

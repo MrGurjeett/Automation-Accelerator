@@ -1,0 +1,43 @@
+{
+  "name": "test-retry",
+  "version": "3",
+  "description": "Test scenario: force_fail flag triggers step failure → MCP retry intelligence consulted",
+  "use_mcp_decision": false,
+  "use_mcp_retry": true,
+  "use_mcp_condition": false,
+  "defaults": {
+    "feature_name": "TestRetry"
+  },
+  "steps": [
+    {
+      "name": "detect_excel",
+      "label": "Detect Input",
+      "inputs": {
+        "excel_path": "$input.excel_path"
+      }
+    },
+    {
+      "name": "read_excel",
+      "label": "Read Excel",
+      "inputs": {
+        "excel_path": "$steps.detect_excel.data.excel_path"
+      }
+    },
+    {
+      "name": "validate",
+      "label": "Schema Validation",
+      "inputs": {
+        "rows": "$steps.read_excel.data.rows",
+        "force_fail": "$input.force_fail"
+      }
+    },
+    {
+      "name": "normalize",
+      "label": "AI Normalisation",
+      "inputs": {
+        "validated": "$steps.validate.data.validated"
+      },
+      "on_failure": "continue"
+    }
+  ]
+}
