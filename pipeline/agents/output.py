@@ -64,6 +64,7 @@ class ExecutionAgent(ConnectorAwareMixin, BaseAgent):
             "passed": result.passed,
             "failed": result.failed,
             "errors": result.errors,
+            "skipped": result.skipped,
             "total": result.total,
             "success": result.success,
         }

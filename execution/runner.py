@@ -30,6 +30,7 @@ class TestResult:
     failed: int
     errors: int
     total: int
+    skipped: int = 0
 
     @property
     def success(self) -> bool:
@@ -92,25 +93,31 @@ def run_tests() -> TestResult:
 
     rc = proc.wait()
 
-    passed = failed = errors = total = 0
+    passed = failed = errors = skipped = total = 0
     # Parse counts from the captured pytest summary.
     for raw in captured[::-1]:
         line = raw.strip()
         if not line:
             continue
-        # Typical summary: "1 failed, 3 passed, 1 warning in 182.68s"
-        if ("passed" in line) or ("failed" in line) or ("error" in line) or ("errors" in line):
+        # Typical summaries:
+        #   "1 failed, 3 passed, 1 warning in 182.68s"
+        #   "20 skipped, 1 warning in 48.52s"
+        #   "4 passed in 210.05s"
+        if ("passed" in line) or ("failed" in line) or ("error" in line) or ("errors" in line) or ("skipped" in line):
             p = re.search(r"(\d+)\s+passed", line)
             f = re.search(r"(\d+)\s+failed", line)
             e = re.search(r"(\d+)\s+error(?:s)?", line)
+            s = re.search(r"(\d+)\s+skipped", line)
             if p:
                 passed = int(p.group(1))
             if f:
                 failed = int(f.group(1))
             if e:
                 errors = int(e.group(1))
-            if p or f or e:
-                total = passed + failed + errors
+            if s:
+                skipped = int(s.group(1))
+            if p or f or e or s:
+                total = passed + failed + errors + skipped
                 break
 
     test_result = TestResult(
@@ -119,16 +126,19 @@ def run_tests() -> TestResult:
         failed=failed,
         errors=errors,
         total=total,
+        skipped=skipped,
     )
 
     logger.info("───── Test Execution Summary ─────")
     if test_result.total > 0:
-        logger.info("  Total:  %d", test_result.total)
-        logger.info("  Passed: %d", test_result.passed)
+        logger.info("  Total:   %d", test_result.total)
+        logger.info("  Passed:  %d", test_result.passed)
+        if test_result.skipped:
+            logger.warning("  Skipped: %d", test_result.skipped)
         if test_result.failed:
-            logger.error("  Failed: %d", test_result.failed)
+            logger.error("  Failed:  %d", test_result.failed)
         if test_result.errors:
-            logger.error("  Errors: %d", test_result.errors)
+            logger.error("  Errors:  %d", test_result.errors)
     else:
         logger.warning("  Could not parse test counts from output.")
 
