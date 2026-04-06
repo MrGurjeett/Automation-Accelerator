@@ -1,0 +1,252 @@
+[
+  {
+    "testCaseId": "TC01",
+    "name": "TC01 - Login Test",
+    "steps": [
+      {
+        "step": 1,
+        "action": "navigate",
+        "target": "Login Page"
+      },
+      {
+        "step": 2,
+        "action": "fill",
+        "target": "Username",
+        "value": "john"
+      },
+      {
+        "step": 3,
+        "action": "fill",
+        "target": "Password",
+        "value": "demo"
+      },
+      {
+        "step": 4,
+        "action": "click",
+        "target": "Login Button"
+      },
+      {
+        "step": 5,
+        "action": "verify_text",
+        "target": "Accounts Overview Title",
+        "expected": "Accounts Overview"
+      }
+    ]
+  },
+  {
+    "testCaseId": "TC02",
+    "name": "TC02 - Login Test",
+    "steps": [
+      {
+        "step": 1,
+        "action": "navigate",
+        "target": "Login Page"
+      },
+      {
+        "step": 2,
+        "action": "fill",
+        "target": "Username",
+        "value": "john"
+      },
+      {
+        "step": 3,
+        "action": "fill",
+        "target": "Password",
+        "value": "demo"
+      },
+      {
+        "step": 4,
+        "action": "click",
+        "target": "Login Button"
+      },
+      {
+        "step": 5,
+        "action": "navigate",
+        "target": "Transfer Funds"
+      },
+      {
+        "step": 6,
+        "action": "fill",
+        "target": "Amount",
+        "value": "100"
+      },
+      {
+        "step": 7,
+        "action": "select",
+        "target": "Fromaccountid",
+        "value": "first"
+      },
+      {
+        "step": 8,
+        "action": "select",
+        "target": "Toaccountid",
+        "value": "second"
+      },
+      {
+        "step": 9,
+        "action": "click",
+        "target": "Transfer"
+      },
+      {
+        "step": 10,
+        "action": "verify_text",
+        "target": "Transfer",
+        "expected": "Transfer Complete"
+      }
+    ]
+  },
+  {
+    "testCaseId": "TC03",
+    "name": "TC03 - Login Test",
+    "steps": [
+      {
+        "step": 1,
+        "action": "navigate",
+        "target": "Login Page"
+      },
+      {
+        "step": 2,
+        "action": "fill",
+        "target": "Username",
+        "value": "john"
+      },
+      {
+        "step": 3,
+        "action": "fill",
+        "target": "Password",
+        "value": "demo"
+      },
+      {
+        "step": 4,
+        "action": "click",
+        "target": "Login Button"
+      },
+      {
+        "step": 5,
+        "action": "navigate",
+        "target": "Bill Pay"
+      },
+      {
+        "step": 6,
+        "action": "fill",
+        "target": "Payee.name",
+        "value": "John"
+      },
+      {
+        "step": 7,
+        "action": "fill",
+        "target": "Payee.address.street",
+        "value": "123 Main St"
+      },
+      {
+        "step": 8,
+        "action": "fill",
+        "target": "Payee.address.city",
+        "value": "New York"
+      },
+      {
+        "step": 9,
+        "action": "fill",
+        "target": "Payee.address.state",
+        "value": "NY"
+      },
+      {
+        "step": 10,
+        "action": "fill",
+        "target": "Payee.address.zipCode",
+        "value": "10001"
+      },
+      {
+        "step": 11,
+        "action": "fill",
+        "target": "Payee.phoneNumber",
+        "value": "1234567890"
+      },
+      {
+        "step": 12,
+        "action": "fill",
+        "target": "Payee.accountNumber",
+        "value": "13344"
+      },
+      {
+        "step": 13,
+        "action": "fill",
+        "target": "verifyAccount",
+        "value": "13344"
+      },
+      {
+        "step": 14,
+        "action": "fill",
+        "target": "Amount",
+        "value": "50"
+      },
+      {
+        "step": 15,
+        "action": "click",
+        "target": "Send Payment"
+      },
+      {
+        "step": 16,
+        "action": "verify_text",
+        "target": "Bill Payment Complete",
+        "expected": "was successful"
+      }
+    ]
+  },
+  {
+    "testCaseId": "TC04",
+    "name": "TC04 - Login Test",
+    "steps": [
+      {
+        "step": 1,
+        "action": "navigate",
+        "target": "Login Page"
+      },
+      {
+        "step": 2,
+        "action": "fill",
+        "target": "Username",
+        "value": "john"
+      },
+      {
+        "step": 3,
+        "action": "fill",
+        "target": "Password",
+        "value": "demo"
+      },
+      {
+        "step": 4,
+        "action": "click",
+        "target": "Login Button"
+      },
+      {
+        "step": 5,
+        "action": "navigate",
+        "target": "Request Loan"
+      },
+      {
+        "step": 6,
+        "action": "fill",
+        "target": "Amount",
+        "value": "100"
+      },
+      {
+        "step": 7,
+        "action": "fill",
+        "target": "Downpayment",
+        "value": "10"
+      },
+      {
+        "step": 8,
+        "action": "click",
+        "target": "Apply Now"
+      },
+      {
+        "step": 9,
+        "action": "verify_text",
+        "target": "Loan request processed",
+        "expected": "Loan request processed"
+      }
+    ]
+  }
+]

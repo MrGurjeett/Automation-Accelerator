@@ -132,10 +132,12 @@ class ADOConnector(BaseConnector):
             return self._fetch_work_items(query, project)
         elif fetch_type == "test_cases":
             return self._fetch_test_cases(query, project)
+        elif fetch_type == "git_file":
+            return self._fetch_git_file(query, project)
         else:
             return ConnectorResult(
                 ok=False,
-                error=f"Unknown fetch type: {fetch_type!r}. Supported: work_items, test_cases",
+                error=f"Unknown fetch type: {fetch_type!r}. Supported: work_items, test_cases, git_file",
             )
 
     def push(self, data: dict[str, Any]) -> ConnectorResult:
@@ -410,4 +412,62 @@ class ADOConnector(BaseConnector):
                     status_code=status,
                 )
         except Exception as exc:
+            return ConnectorResult(ok=False, error=str(exc))
+
+    # ------------------------------------------------------------------
+    # Git file fetch
+    # ------------------------------------------------------------------
+
+    def _fetch_git_file(self, query: dict, project: str) -> ConnectorResult:
+        """Fetch a file from an Azure DevOps Git repository.
+
+        Query parameters:
+          - ``repository``  — repo name (defaults to project name)
+          - ``path``        — file path in repo (e.g. "/test-cases/data.json")
+          - ``branch``      — branch (optional, defaults to default branch)
+          - ``url``         — full ADO Git Items API URL (overrides above)
+
+        Returns file content as parsed JSON (if .json) or raw text.
+        """
+        full_url = query.get("url")
+        repo = query.get("repository") or project
+        file_path = query.get("path", "")
+        branch = query.get("branch")
+
+        try:
+            if full_url:
+                url = full_url
+            else:
+                if not file_path:
+                    return ConnectorResult(
+                        ok=False,
+                        error="git_file fetch requires 'path' or 'url'",
+                    )
+                url = (
+                    f"{self._base_url}/{quote(project)}/_apis/git"
+                    f"/repositories/{quote(repo)}/items"
+                    f"?path={quote(file_path)}&api-version={_API_VERSION}"
+                )
+                if branch:
+                    url += f"&versionDescriptor.version={quote(branch)}"
+
+            logger.info("[ADO] Fetching git file: %s", url)
+            status, body = self._request("GET", url)
+
+            if status != 200:
+                return ConnectorResult(
+                    ok=False,
+                    error=f"Git file fetch failed (HTTP {status})",
+                    status_code=status,
+                    data={"response": body},
+                )
+
+            return ConnectorResult(
+                ok=True,
+                data={"content": body, "path": file_path or full_url},
+                status_code=status,
+            )
+
+        except Exception as exc:
+            logger.error("[ADO] Git file fetch failed: %s", exc)
             return ConnectorResult(ok=False, error=str(exc))

@@ -1104,6 +1104,21 @@ class PipelineService:
 
         excel_path = ctx.get("excel_path")
         raw_path: str | None = None
+
+        # If path is already set (e.g., from ADO data source), validate it exists
+        if excel_path is not None:
+            p = Path(excel_path).expanduser().resolve()
+            if p.exists():
+                logger.info("Using pre-set input file: %s", p)
+                return StepResult(
+                    step=StepName.DETECT_EXCEL.value,
+                    ok=True,
+                    data={"excel_path": str(p), "raw_path": None},
+                )
+            else:
+                logger.warning("Pre-set input file not found: %s — auto-detecting", p)
+                excel_path = None
+
         if excel_path is None:
             excel_path, raw_path = detect_excel()
 
@@ -1114,14 +1129,22 @@ class PipelineService:
         )
 
     def _step_read_excel(self, ctx: dict) -> StepResult:
-        from excel.excel_reader import read_excel
-
         excel_path = ctx.get("excel_path")
         if not excel_path:
             return StepResult(step=StepName.READ_EXCEL.value, ok=False, error="excel_path required")
 
         path = Path(excel_path).expanduser().resolve()
-        rows = read_excel(path)
+        ext = path.suffix.lower()
+
+        # Use PipelineInputAdapter for JSON/CSV, Excel reader for xlsx
+        if ext in (".json", ".csv"):
+            from pipeline.io import PipelineInputAdapter
+            rows = PipelineInputAdapter.detect_and_load(path)
+            logger.info("Loaded %d rows from %s file: %s", len(rows), ext, path.name)
+        else:
+            from excel.excel_reader import read_excel
+            rows = read_excel(path)
+
         return StepResult(
             step=StepName.READ_EXCEL.value,
             ok=True,
@@ -1432,9 +1455,24 @@ class PipelineService:
         self.close()
 
         result = run_tests()
+
+        # ── TRUTH VALIDATION ──────────────────────────────────────────
+        # Never infer success from exit code alone.  A pytest run that
+        # discovers 0 tests (or skips all) may still exit with code 0,
+        # which would be a *false positive*.  We require at least one
+        # test to have actually passed before marking the step ok.
+        truly_ok = result.success and result.total > 0 and result.passed > 0
+
+        if result.success and not truly_ok:
+            logger.warning(
+                "[TRUTH] _step_execute: exit_code=0 but total=%d passed=%d "
+                "skipped=%d — marking step as FAIL (false-positive prevention)",
+                result.total, result.passed, result.skipped,
+            )
+
         return StepResult(
             step=StepName.EXECUTE.value,
-            ok=result.success,
+            ok=truly_ok,
             data={
                 "exit_code": result.exit_code,
                 "passed": result.passed,
@@ -1443,6 +1481,7 @@ class PipelineService:
                 "skipped": result.skipped,
                 "total": result.total,
                 "success": result.success,
+                "validated_ok": truly_ok,
             },
         )
 

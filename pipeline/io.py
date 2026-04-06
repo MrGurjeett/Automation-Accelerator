@@ -63,23 +63,103 @@ class PipelineInputAdapter:
 
     @staticmethod
     def from_json(path: str | Path) -> list[dict[str, Any]]:
-        """Load rows from a JSON file (expects array of objects)."""
+        """Load rows from a JSON file.
+
+        Supports:
+          - Flat list of row dicts: [{"TC_ID":..., "Page":..., "Action":...}, ...]
+          - Object wrappers: {"rows":[...]}, {"test_cases":[...]}, {"testCases":[...]},
+            {"data":[...]}, {"items":[...]}
+          - ADO nested format: [{"testCaseId":"TC01", "steps":[{"step":1, "action":"click", ...}]}]
+            → flattened into one row per step with TC_ID, Page, Action, Locator, Value columns.
+        """
         p = Path(path).expanduser().resolve()
         data = json.loads(p.read_text(encoding="utf-8"))
-        if isinstance(data, list):
-            rows = data
-        elif isinstance(data, dict) and "rows" in data:
-            rows = data["rows"]
+
+        # Unwrap common wrapper keys
+        if isinstance(data, dict):
+            for key in ("rows", "test_cases", "testCases", "data", "items"):
+                if key in data and isinstance(data[key], list):
+                    data = data[key]
+                    break
+            else:
+                # Single test case dict with expected keys
+                if any(k in data for k in ("TC_ID", "testCaseId", "Page")):
+                    data = [data]
+                else:
+                    raise ValueError(
+                        "JSON input must be an array of objects or a recognized wrapper object"
+                    )
+
+        if not isinstance(data, list) or not data:
+            raise ValueError("JSON input resolved to an empty or non-array structure")
+
+        # Check if this is ADO nested format (test cases with embedded steps arrays)
+        # ADO format: [{"testCaseId": "TC01", "name": "...", "steps": [{"action":..., "target":...}]}]
+        first = data[0] if data else {}
+        if isinstance(first, dict) and "steps" in first and isinstance(first.get("steps"), list):
+            rows = _flatten_nested_test_cases(data)
+            logger.info("Loaded %d rows (flattened from nested test cases) from JSON: %s", len(rows), p.name)
         else:
-            raise ValueError(
-                "JSON input must be an array of objects or {\"rows\": [...]}"
-            )
-        logger.info("Loaded %d rows from JSON: %s", len(rows), p.name)
+            rows = data
+            logger.info("Loaded %d rows from JSON: %s", len(rows), p.name)
+
         return rows
 
     @staticmethod
     def supported_extensions() -> list[str]:
         return sorted(PipelineInputAdapter.SUPPORTED_EXTENSIONS)
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _flatten_nested_test_cases(test_cases: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Flatten ADO-style nested test cases into flat rows.
+
+    ADO format (input):
+        [{"testCaseId": "TC01", "name": "Login Test",
+          "steps": [{"step": 1, "action": "navigate", "target": "Login Page"}, ...]}]
+
+    Pipeline format (output — matches Excel column names):
+        [{"TC_ID": "TC01", "Page": "Login", "Action": "navigate",
+          "Target": "Login Page", "Value": "", "Expected": "-"}, ...]
+    """
+    # Page mapping: derive the Page name from the test case name or first navigation target
+    rows: list[dict[str, Any]] = []
+    for tc in test_cases:
+        tc_id = tc.get("testCaseId") or tc.get("TC_ID") or tc.get("id", "")
+        tc_name = tc.get("name", "")
+        steps = tc.get("steps", [])
+
+        if not steps:
+            rows.append({"TC_ID": tc_id, "Page": "-", "Action": "-",
+                         "Target": "-", "Value": "", "Expected": "-"})
+            continue
+
+        # Determine current page from navigation actions
+        current_page = "-"
+        for s in steps:
+            action = s.get("action") or s.get("Action") or "-"
+            target = s.get("target") or s.get("Target") or "-"
+            value = s.get("value") or s.get("Value") or ""
+            expected = s.get("expected") or s.get("Expected") or "-"
+
+            # Navigation actions set the current page context
+            if action.lower() in ("navigate", "goto", "open"):
+                current_page = target
+
+            rows.append({
+                "TC_ID": tc_id,
+                "Page": current_page,
+                "Action": action,
+                "Target": target,
+                "Value": value,
+                "Expected": expected,
+            })
+
+    logger.info("Flattened %d test cases into %d rows", len(test_cases), len(rows))
+    return rows
 
 
 # ---------------------------------------------------------------------------

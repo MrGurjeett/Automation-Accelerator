@@ -14,16 +14,29 @@ logger = logging.getLogger(__name__)
 
 
 class ExcelDetectionAgent(BaseAgent):
-    """Detect Excel files in the input/ directory."""
+    """Detect test-case files (Excel, JSON, CSV) in the input/ directory."""
 
     name = "excel_detection"
-    description = "Auto-detect Excel test-case files in the input folder"
+    description = "Auto-detect test-case input files (Excel, JSON, CSV)"
 
     def run(self, context: dict[str, Any]) -> AgentResult:
         from pipeline.utils import detect_excel
 
         excel_path = context.get("excel_path")
         raw_path: str | None = None
+
+        # If path is already set (e.g., from ADO data source), validate it exists
+        if excel_path is not None:
+            p = Path(excel_path).expanduser().resolve()
+            if p.exists():
+                logger.info("Using pre-set input file: %s", p)
+                return AgentResult(
+                    ok=True,
+                    data={"excel_path": str(p), "raw_path": None},
+                )
+            else:
+                logger.warning("Pre-set input file not found: %s — auto-detecting", p)
+                excel_path = None
 
         if excel_path is None:
             try:
@@ -38,20 +51,28 @@ class ExcelDetectionAgent(BaseAgent):
 
 
 class ExcelReaderAgent(BaseAgent):
-    """Read and parse Excel test-case files."""
+    """Read and parse Excel/JSON/CSV test-case files."""
 
     name = "excel_reader"
-    description = "Parse Excel file into structured test-case rows"
+    description = "Parse test-case file (Excel, JSON, CSV) into structured rows"
 
     def run(self, context: dict[str, Any]) -> AgentResult:
-        from excel.excel_reader import read_excel
-
         excel_path = context.get("excel_path")
         if not excel_path:
             return AgentResult(ok=False, error="excel_path required")
 
         path = Path(excel_path).expanduser().resolve()
-        rows = read_excel(path)
+        ext = path.suffix.lower()
+
+        # Use PipelineInputAdapter for JSON/CSV, Excel reader for xlsx
+        if ext in (".json", ".csv"):
+            from pipeline.io import PipelineInputAdapter
+            rows = PipelineInputAdapter.detect_and_load(path)
+            logger.info("Loaded %d rows from %s: %s", len(rows), ext, path.name)
+        else:
+            from excel.excel_reader import read_excel
+            rows = read_excel(path)
+
         return AgentResult(
             ok=True,
             data={"excel_path": str(path), "rows": rows, "row_count": len(rows)},
