@@ -1,0 +1,142 @@
+from enum import Enum
+from abc import ABC, abstractmethod
+import json
+import pandas as pd
+
+# =========================
+# 1. Custom Exceptions
+# =========================
+class InvalidAgeError(Exception):
+    pass
+
+class InvalidNameError(Exception):
+    pass
+
+# =========================
+# 2. Enum for Status
+# =========================
+class Status(Enum):
+    ACTIVE = "Active"
+    INACTIVE = "Inactive"
+
+# =========================
+# 3. Abstract Base Class
+# =========================
+class Person(ABC):
+    def __init__(self, name, age):
+        if not name.strip():
+            raise InvalidNameError("Name cannot be empty")
+
+        if age < 18:
+            raise InvalidAgeError("Age must be 18+")
+
+        self.name = name.title()     # String manipulation
+        self.age = age
+
+    @abstractmethod
+    def display(self):
+        pass
+
+# =========================
+# 4. Inheritance
+# =========================
+class User(Person):
+    def __init__(self, name, age, user_id, status):
+        super().__init__(name, age)
+        self.user_id = user_id
+        self.status = status
+
+    def display(self):
+        return f"{self.user_id} - {self.name} ({self.age}) [{self.status.value}]"
+
+    def to_dict(self):
+        return {
+            "ID": self.user_id,
+            "Name": self.name,
+            "Age": self.age,
+            "Status": self.status.value
+        }
+
+# =========================
+# 5. User Manager (Dictionary Usage)
+# =========================
+class UserManager:
+    def __init__(self):
+        self.users = {}  # dictionary
+
+    def add_user(self, user):
+        self.users[user.user_id] = user
+
+    def remove_user(self, user_id):
+        if user_id in self.users:
+            del self.users[user_id]
+
+    def get_user(self, user_id):
+        return self.users.get(user_id)
+
+    def display_all(self):
+        for user in self.users.values():
+            print(user.display())
+
+    def to_list(self):
+        return [user.to_dict() for user in self.users.values()]
+
+# =========================
+# 6. File Operations
+# =========================
+class FileHandler:
+
+    @staticmethod
+    def save_to_json(data, filename="users.json"):
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+
+    @staticmethod
+    def save_to_excel(data, filename="users.xlsx"):
+        df = pd.DataFrame(data)
+        df.to_excel(filename, index=False)
+
+# =========================
+# 7. Tuple Usage Example
+# =========================
+def tuple_example():
+    sample = ("User1", 25, "Active")
+    name, age, status = sample   # unpacking
+    print(f"Tuple Data → {name}, {age}, {status}")
+
+# =========================
+# 8. Main Program
+# =========================
+def main():
+    manager = UserManager()
+
+    try:
+        # Creating users
+        u1 = User("gurjeet singh", 30, 101, Status.ACTIVE)
+        u2 = User("rahul", 25, 102, Status.INACTIVE)
+
+        manager.add_user(u1)
+        manager.add_user(u2)
+
+        print("\nAll Users:")
+        manager.display_all()
+
+        # Tuple demo
+        tuple_example()
+
+        # Save data
+        data = manager.to_list()
+        FileHandler.save_to_json(data)
+        FileHandler.save_to_excel(data)
+
+        print("\nData saved to JSON & Excel")
+
+    except (InvalidAgeError, InvalidNameError) as e:
+        print("Validation Error:", e)
+
+    except Exception as e:
+        print("Unexpected Error:", e)
+
+# Run project
+if __name__ == "__main__":
+    main()
